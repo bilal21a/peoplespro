@@ -26,9 +26,17 @@ class DepartmentController extends Controller {
 				{
 					return $row->company->company_name ?? '';
 				})
-				->addColumn('department_head', function ($row)
+				// ->addColumn('department_head', function ($row)
+				// {
+				// 	return $row->DepartmentHead->full_name ?? '';
+				// })
+				->addColumn('created_at',function ($row)
 				{
-					return $row->DepartmentHead->full_name ?? '';
+					return $row->created_at->format('d/m/Y H:II') ;
+				})
+				->addColumn('added_by',function ($row)
+				{
+					return auth()->user()->first_name.' '.auth()->user()->last_name;
 				})
 				->addColumn('action', function ($data)
 				{

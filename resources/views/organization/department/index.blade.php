@@ -25,9 +25,11 @@
                 <thead>
                 <tr>
                     <th class="not-exported"></th>
-                    <th>{{trans('file.Department')}}</th>
-                    <th>{{__('Department Head')}}</th>
+                    <th>{{trans('file.Department')}} Name</th>
+                    {{-- <th>{{__('Department Head')}}</th> --}}
                     <th>{{trans('file.Company')}}</th>
+                    <th>Added By</th>
+                    <th>Created At</th>
                     <th class="not-exported">{{trans('file.action')}}</th>
                 </tr>
                 </thead>
@@ -179,12 +181,16 @@
 
                     },
                     {
-                        data: 'department_head',
-                        name: 'department_head',
-                    },
-                    {
                         data: 'company',
                         name: 'company',
+                    },
+                    {
+                        data: 'added_by',
+                        name: 'added_by',
+                    },
+                    {
+                        data: 'created_at',
+                        name: 'created_at',
                     },
                     {
                         data: 'action',
