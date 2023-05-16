@@ -23,14 +23,18 @@
                 <tr>
                     <th class="not-exported"></th>
                     <th>{{trans('file.Company')}}</th>
-                    <th>{{trans('file.Shift')}}</th>
-                    <th>{{trans('file.Monday')}}</th>
+                    <th>{{trans('file.Shift')}} Name</th>
+                    <th>Start at</th>
+                    <th>End at</th>
+                    <th>Added By</th>
+                    <th>Created At</th>
+                    {{-- <th>{{trans('file.Monday')}}</th>
                     <th>{{trans('file.Tuesday')}}</th>
                     <th>{{trans('file.Wednesday')}}</th>
                     <th>{{trans('file.Thursday')}}</th>
                     <th>{{trans('file.Friday')}}</th>
                     <th>{{trans('file.Saturday')}}</th>
-                    <th>{{trans('file.Sunday')}}</th>
+                    <th>{{trans('file.Sunday')}}</th> --}}
 
                     <th class="not-exported">{{trans('file.action')}}</th>
                 </tr>
@@ -128,77 +132,93 @@
                     data: 'shift_name',
                     name: 'shift_name',
                 },
+                // {
+                //     data: null,
+                //     render: function (data) {
+                //         if (data.monday_in) {
+                //             return data.monday_in + ' {{trans('file.To')}} ' + data.monday_out;
+                //         } else {
+                //             return '';
+                //         }
+                //     }
+                // },
                 {
-                    data: null,
-                    render: function (data) {
-                        if (data.monday_in) {
-                            return data.monday_in + ' {{trans('file.To')}} ' + data.monday_out;
-                        } else {
-                            return '';
-                        }
-                    }
+                    data: 'monday_in',
+                    name: 'monday_in'
                 },
                 {
-                    data: null,
-                    render: function (data) {
-                        if (data.tuesday_in) {
-                            return data.tuesday_in + ' {{trans('file.To')}} ' + data.tuesday_out;
-                        } else {
-                            return '';
-                        }
-                    }
+                    data: 'monday_out',
+                    name: 'monday_out'
                 },
                 {
-                    data: null,
-                    render: function (data) {
-                        if (data.wednesday_in) {
-                            return data.wednesday_in + ' {{trans('file.To')}} ' + data.wednesday_out;
-                        } else {
-                            return '';
-                        }
+                    data: 'added_by',
+                    name: 'added_by'
+                },
+                {
+                    data: 'created_at',
+                    name: 'created_at'
+                },
+                // {
+                //     data: null,
+                //     render: function (data) {
+                //         if (data.tuesday_in) {
+                //             return data.tuesday_in + ' {{trans('file.To')}} ' + data.tuesday_out;
+                //         } else {
+                //             return '';
+                //         }
+                //     }
+                // },
+                // {
+                //     data: null,
+                //     render: function (data) {
+                //         if (data.wednesday_in) {
+                //             return data.wednesday_in + ' {{trans('file.To')}} ' + data.wednesday_out;
+                //         } else {
+                //             return '';
+                //         }
 
-                    }
-                },
-                {
-                    data: null,
-                    render: function (data) {
-                        if (data.thursday_in) {
-                            return data.thursday_in + ' {{trans('file.To')}} ' + data.thursday_out;
-                        } else {
-                            return '';
-                        }
-                    }
-                },
-                {
-                    data: null,
-                    render: function (data) {
-                        if (data.friday_in) {
-                            return data.friday_in + ' {{trans('file.To')}} ' + data.friday_out;
-                        } else {
-                            return '';
-                        }
-                    }
-                },
-                {
-                    data: null,
-                    render: function (data) {
-                        if (data.saturday_in) {
-                            return data.saturday_in + ' {{trans('file.To')}} ' + data.saturday_out;
-                        } else {
-                            return '';
-                        }
-                    }
-                },
-                {
-                    data: null,
-                    render: function (data) {
-                        if (data.sunday_in) {
-                            return data.sunday_in + ' {{trans('file.To')}} ' + data.sunday_out;
-                        } else {
-                            return '';
-                        }
-                    }
-                },
+                //     }
+                // },
+                // {
+                //     data: null,
+                //     render: function (data) {
+                //         if (data.thursday_in) {
+                //             return data.thursday_in + ' {{trans('file.To')}} ' + data.thursday_out;
+                //         } else {
+                //             return '';
+                //         }
+                //     }
+                // },
+                // {
+                //     data: null,
+                //     render: function (data) {
+                //         if (data.friday_in) {
+                //             return data.friday_in + ' {{trans('file.To')}} ' + data.friday_out;
+                //         } else {
+                //             return '';
+                //         }
+                //     }
+                // },
+                // {
+                //     data: null,
+                //     render: function (data) {
+                //         if (data.saturday_in) {
+                //             return data.saturday_in + ' {{trans('file.To')}} ' + data.saturday_out;
+                //         } else {
+                //             return '';
+                //         }
+                //     }
+                // },
+                // {
+                //     data: null,
+                //     render: function (data) {
+                //         if (data.sunday_in) {
+                //             return data.sunday_in + ' {{trans('file.To')}} ' + data.sunday_out;
+                //         } else {
+                //             return '';
+                //         }
+                //     }
+                // },
                 {
                     data: 'action',
                     name: 'action',

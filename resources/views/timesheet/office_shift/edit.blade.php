@@ -22,7 +22,7 @@
 
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label>{{trans('file.Company')}} *</label>
+                                            <label>{{trans('file.Company')}} Name*</label>
                                             <select name="company_id" id="company_id" class="form-control selectpicker"
                                                     data-live-search="true" data-live-search-style="contains"
                                                     title='{{__('Selecting',['key'=>trans('file.Company')])}}...'>
@@ -34,26 +34,27 @@
                                     </div>
 
                                     <div class="col-md-6 form-group">
-                                        <label>{{trans('file.Shift')}} *</label>
+                                        <label>{{trans('file.Shift')}} Name*</label>
                                         <input type="text" name="shift_name" id="shift_name" class="form-control"
                                                placeholder="shift name" value="{{$office_shift->shift_name}}">
                                     </div>
 
-                                    <div class="col-md-6">
-                                        <label>{{trans('file.Monday')}}</label>
+                                    <div class="col-12">
                                         <div class="row">
                                             <div class="col-md-6">
+                                                <label>Time In</label>
                                                 <input type="text" name="monday_in" id="monday_in" class="form-control time mb-3"
                                                        value="{{$office_shift->monday_in}}" placeholder="{{__('In Time')}}">
                                             </div>
                                             <div class="col-md-6">
+                                                <label>Time Out</label>
                                                 <input type="text" name="monday_out" id="monday_out"
                                                        class="form-control time mb-3"
                                                        value="{{$office_shift->monday_out}}" placeholder="{{__('Out Time')}}">
                                             </div>
                                         </div>
                                     </div>
-
+{{-- 
                                     <div class="col-md-6">
                                         <label>{{trans('file.Tuesday')}}</label>
                                         <div class="row">
@@ -146,7 +147,7 @@
                                                        value="{{$office_shift->sunday_out}}" placeholder="{{__('Out Time')}}">
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> --}}
 
                                     <span id="form_result"></span>
 

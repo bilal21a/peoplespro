@@ -48,7 +48,13 @@ class OfficeShiftController extends Controller {
 
 						return $button;
 					})
-					->rawColumns(['action'])
+					->addColumn('created_at', function ($row) {
+						return $row->created_at->format('d/m/Y H:II');
+					})
+					->addColumn('added_by', function ($row) {
+						return auth()->user()->first_name . ' ' . auth()->user()->last_name;
+					})
+					->rawColumns(['action','created_at','added_by'])
 					->make(true);
 			}
 
@@ -93,7 +99,6 @@ class OfficeShiftController extends Controller {
 			),
 				[
 					'shift_name' => 'required',
-
 				]
 			);
 
@@ -109,18 +114,18 @@ class OfficeShiftController extends Controller {
 			$data['shift_name'] = $request->shift_name;
 			$data['monday_in'] = $request->monday_in;
 			$data['monday_out'] = $request->monday_out;
-			$data['tuesday_in'] = $request->tuesday_in;
-			$data['tuesday_out'] = $request->tuesday_out;
-			$data['wednesday_in'] = $request->wednesday_in;
-			$data['wednesday_out'] = $request->wednesday_out;
-			$data['thursday_in'] = $request->thursday_in;
-			$data['thursday_out'] = $request->thursday_out;
-			$data['friday_in'] = $request->friday_in;
-			$data['friday_out'] = $request->friday_out;
-			$data['saturday_in'] = $request->saturday_in;
-			$data['saturday_out'] = $request->saturday_out;
-			$data['sunday_in'] = $request->sunday_in;
-			$data['sunday_out'] = $request->sunday_out;
+			$data['tuesday_in'] = $request->monday_in;
+			$data['tuesday_out'] = $request->monday_out;
+			$data['wednesday_in'] = $request->monday_in;
+			$data['wednesday_out'] = $request->monday_out;
+			$data['thursday_in'] = $request->monday_in;
+			$data['thursday_out'] = $request->monday_out;
+			$data['friday_in'] = $request->monday_in;
+			$data['friday_out'] = $request->monday_out;
+			$data['saturday_in'] = $request->monday_in;
+			$data['saturday_out'] = $request->monday_out;
+			$data['sunday_in'] = $request->monday_in;
+			$data['sunday_out'] = $request->monday_out;
 			$data['company_id'] = $request->company_id;
 
 
@@ -185,7 +190,6 @@ class OfficeShiftController extends Controller {
 			),
 				[
 					'shift_name' => 'required',
-
 				]
 			);
 
@@ -201,18 +205,18 @@ class OfficeShiftController extends Controller {
 			$data['shift_name'] = $request->shift_name;
 			$data['monday_in'] = $request->monday_in;
 			$data['monday_out'] = $request->monday_out;
-			$data['tuesday_in'] = $request->tuesday_in;
-			$data['tuesday_out'] = $request->tuesday_out;
-			$data['wednesday_in'] = $request->wednesday_in;
-			$data['wednesday_out'] = $request->wednesday_out;
-			$data['thursday_in'] = $request->thursday_in;
-			$data['thursday_out'] = $request->thursday_out;
-			$data['friday_in'] = $request->friday_in;
-			$data['friday_out'] = $request->friday_out;
-			$data['saturday_in'] = $request->saturday_in;
-			$data['saturday_out'] = $request->saturday_out;
-			$data['sunday_in'] = $request->sunday_in;
-			$data['sunday_out'] = $request->sunday_out;
+			$data['tuesday_in'] = $request->monday_in;
+			$data['tuesday_out'] = $request->monday_out;
+			$data['wednesday_in'] = $request->monday_in;
+			$data['wednesday_out'] = $request->monday_out;
+			$data['thursday_in'] = $request->monday_in;
+			$data['thursday_out'] = $request->monday_out;
+			$data['friday_in'] = $request->monday_in;
+			$data['friday_out'] = $request->monday_out;
+			$data['saturday_in'] = $request->monday_in;
+			$data['saturday_out'] = $request->monday_out;
+			$data['sunday_in'] = $request->monday_in;
+			$data['sunday_out'] = $request->monday_out;
 			if ($request->company_id)
 			{
 				$data['company_id'] = $request->company_id;
