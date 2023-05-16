@@ -417,6 +417,17 @@
                         $('#department_id').selectpicker('refresh');
                         $('#department_id').selectpicker('val', html.data.department_id);
                         $('#department_id').selectpicker('refresh');
+                        $('#rate_type').selectpicker('val', html.data.rate_type);
+                        $('#rate_type').selectpicker('refresh');
+
+                        if (html.data.rate_type == 2) {
+                            $('#rate_per_shift, #overtime_rate').attr('disabled', true);
+                            $('#rate_per_shift, #overtime_rate').val('');
+                        }else{
+                            $('#rate_per_shift, #overtime_rate').attr('disabled', false);
+                            $('#rate_per_shift').val(html.data.rate_per_shift);
+                            $('#overtime_rate').val(html.data.overtime_rate);
+                        }
 
                         $('#hidden_id').val(html.data.id);
                         $('.modal-title').text('{{ trans('file.Edit') }}');
