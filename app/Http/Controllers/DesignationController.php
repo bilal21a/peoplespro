@@ -37,6 +37,22 @@ class DesignationController extends Controller
                 ->addColumn('department', function ($row) {
                     return empty($row->department->department_name) ? '' : $row->department->department_name;
                 })
+                ->addColumn('added_by',function ($row)
+				{
+					return auth()->user()->first_name.' '.auth()->user()->last_name;
+				})
+                ->addColumn('rate_per_shift',function ($row)
+				{
+					return $row->rate_type==1?$row->rate_per_shift:'-';
+				})
+                ->addColumn('rate_type',function ($row)
+				{
+					return $row->rate_type==1?'Paid Per Shift':'Peace Rate';
+				})
+                ->addColumn('overtime_rate',function ($row)
+				{
+					return $row->rate_type==1?$row->overtime_rate:'-';
+				})
                 ->addColumn('action', function ($data) {
                     $button = '';
                     if (auth()->user()->can('edit-designation')) {
@@ -48,7 +64,7 @@ class DesignationController extends Controller
                     }
                     return $button;
                 })
-                ->rawColumns(['action'])
+                ->rawColumns(['action','rate_type'])
                 ->make(true);
         }
         return view('organization.designation.index', compact('companies'));

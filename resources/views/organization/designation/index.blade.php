@@ -25,7 +25,11 @@
                         <th>{{ trans('file.Designation') }} Name</th>
                         <th>{{ trans('file.Company') }}</th>
                         <th>{{ trans('file.Department') }}</th>
+                        <th>Rate Type</th>
+                        <th>Rate per shift</th>
+                        <th>Overtime rate/hr</th>
                         <th>Created At</th>
+                        <th>Added By</th>
                         <th class="not-exported">{{ trans('file.action') }}</th>
                     </tr>
                 </thead>
@@ -215,9 +219,26 @@
                             name: 'department',
                         },
                         {
+                            data: 'rate_type',
+                            name: 'rate_type',
+                        },
+                        {
+                            data: 'rate_per_shift',
+                            name: 'rate_per_shift',
+                        },
+                        {
+                            data: 'overtime_rate',
+                            name: 'overtime_rate',
+                        },
+                        {
                             data: 'created_at',
                             name: 'created_at',
                         },
+                        {
+                            data: 'added_by',
+                            name: 'added_by',
+                        },
+
                         {
                             data: 'action',
                             name: 'action',
