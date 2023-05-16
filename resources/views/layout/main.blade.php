@@ -512,7 +512,7 @@
                             @endcan
                             @can('view-office_shift')
                                 <li id="office_shift"><a
-                                            href="{{route('office_shift.index')}}">{{__('Office Shift')}}</a>
+                                            href="{{route('office_shift.index')}}">{{__('Shifts')}}</a>
                                 </li>
                             @endcan
                             @can('view-holiday')

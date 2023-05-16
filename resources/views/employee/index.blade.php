@@ -97,9 +97,14 @@
                 <thead>
                 <tr>
                     <th class="not-exported"></th>
-                    <th>{{trans('file.Employee')}}</th>
-                    <th>{{trans('file.Company')}}</th>
-                    <th>{{trans('file.Contact')}}</th>
+                    <th>{{trans('file.Employee')}} Name</th>
+                    <th>ID Number</th>
+                    <th>Gender</th>
+                    <th>Phone No</th>
+                    <th>Added by</th>
+                    <th>Created At</th>
+                    {{-- <th>{{trans('file.Company')}}</th>
+                    <th>{{trans('file.Contact')}}</th> --}}
                     <th class="not-exported">{{trans('file.action')}}</th>
                 </tr>
                 </thead>
@@ -391,22 +396,43 @@
 
                 },
                 {
-                    data: 'company',
-                    name: 'company',
+                    data: 'id_number',
+                    name: 'id_number',
                 },
                 {
-                    data: 'contacts',
-                    name: 'contacts',
+                    data: 'gender',
+                    name: 'gender',
                 },
+                {
+                    data: 'phone',
+                    name: 'phone',
+                },
+                {
+                    data: 'added_by',
+                    name: 'added_by',
+                },
+                {
+                    data: 'created_at',
+                    name: 'created_at',
+                },
+                // {
+                //     data: 'company',
+                //     name: 'company',
+                // },
+                // {
+                //     data: 'contacts',
+                //     name: 'contacts',
+                // },
                 {
                     data: 'action',
                     name: 'action',
                     orderable: false
                 }
             ],
+            "order": [[2, "asc"]],
 
 
-            "order": [],
+            // "order": [],
             'language': {
                 'lengthMenu': '_MENU_ {{__('records per page')}}',
                 "info": '{{trans("file.Showing")}} _START_ - _END_ (_TOTAL_)',

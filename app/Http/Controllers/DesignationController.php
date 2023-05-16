@@ -34,13 +34,13 @@ class DesignationController extends Controller
                 ->addColumn('created_at', function ($row) {
                     return $row->created_at->format('d/m/Y H:II');
                 })
+                ->addColumn('added_by',function ($row)
+                {
+                    return auth()->user()->first_name.' '.auth()->user()->last_name;
+                })
                 ->addColumn('department', function ($row) {
                     return empty($row->department->department_name) ? '' : $row->department->department_name;
                 })
-                ->addColumn('added_by',function ($row)
-				{
-					return auth()->user()->first_name.' '.auth()->user()->last_name;
-				})
                 ->addColumn('rate_per_shift',function ($row)
 				{
 					return $row->rate_type==1?$row->rate_per_shift:'-';
