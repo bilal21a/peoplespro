@@ -17,7 +17,7 @@
                     </div>
                     <div class="col-md-6">
                         <select name="employee_id" id="employee_id"
-                                class="selectpicker form-control"
+                                class="selectpicker form-control" multiple
                                 data-live-search="true" data-live-search-style="contains"
                                 title='{{__('Selecting',['key'=>trans('file.Employee')])}}...'>
                         </select>
@@ -78,9 +78,14 @@
             <table id="update_attendance-table" class="table ">
                 <thead>
                 <tr>
-                    <th>{{__('Date')}}</th>
+                    <th>Employee Name</th>
+                    <th>Staff Id</th>
+                    <th>Time/date in</th>
+                    <th>Time/date out</th>
+                    <th>Added by</th>
+                    {{-- <th>{{__('Date')}}</th>
                     <th>{{__('In Time')}}</th>
-                    <th>{{__('Out Time')}}</th>
+                    <th>{{__('Out Time')}}</th> --}}
                     <th class="not-exported">{{trans('file.action')}}</th>
                 </tr>
                 </thead>
@@ -119,6 +124,7 @@
                                         <input type="hidden" name="action" id="action" />
                                         <input type="hidden" name="hidden_id" id="hidden_id" />
                                         <input type="hidden" name="employee_id" id="hidden_employee_id" />
+                                        <input type="hidden" name="edit_employee_id" id="edit_employee_id" />
                                         <input type="submit" name="action_button" id="action_button" class="btn btn-warning" value={{trans('file.Add')}} />
                                     </div>
                                 </div>
@@ -192,8 +198,12 @@
 
                 columns: [
                     {
-                        data: 'date',
-                        name: 'date'
+                        data: 'employee',
+                        name: 'employee'
+                    },
+                    {
+                        data: 'staff_id',
+                        name: 'staff_id'
                     },
                     {
                         data: 'clock_in',
@@ -202,6 +212,10 @@
                     {
                         data: 'clock_out',
                         name: 'clock_out'
+                    },
+                    {
+                        data: 'added_by',
+                        name: 'added_by'
                     },
                     {
                         data: 'action',
@@ -297,6 +311,8 @@
 
         $(document).on('click', '.edit', function() {
             let id = $(this).attr('id');
+            console.log('id: ', id);
+            $('#edit_employee_id').val(id);
             let target = "{{ route('update_attendances.index') }}/"+id+'/get';
             $.ajax({
                 url:target,

@@ -1209,6 +1209,7 @@ class AttendanceController extends Controller {
 
 	public function updateAttendance(Request $request)
 	{
+		// dd($request->all());
 		$logged_user = auth()->user();
 		$companies = company::select('id', 'company_name')->get();
 		if ($logged_user->can('edit-attendance'))
@@ -1216,7 +1217,13 @@ class AttendanceController extends Controller {
 			if (request()->ajax())
 			{
 
-				$employee_attendance = Attendance::where('employee_id', $request->employee_id)
+				$employee_attendance = Attendance::with('employee')
+				->when($request->employee_id=='', function ($query) use($request){
+					return $query->where('employee_id', $request->employee_id);
+				})
+				->when(isset($request->employee_id[0]), function ($query) use($request){
+					return $query->whereIn('employee_id', $request->employee_id);
+				})
                     ->whereDate('attendance_date','>=', Carbon::parse($request->attendance_date1)->format('Y-m-d'))
                     ->whereDate('attendance_date','<=', Carbon::parse($request->attendance_date2)->format('Y-m-d'))
 					->get();
@@ -1227,17 +1234,30 @@ class AttendanceController extends Controller {
 					{
 						return $row->id;
 					})
-                    ->addColumn('date', function ($row)
+                    // ->addColumn('date', function ($row)
+					// {
+					// 	// dd($row->employee->designation);
+					// 	return $row->attendance_date;
+					// })
+                    ->addColumn('employee', function ($row)
 					{
-						return $row->attendance_date;
+						return $row->employee->first_name.' '.$row->employee->last_name;
+					})
+                    ->addColumn('staff_id', function ($row)
+					{
+						return $row->employee->staff_id;
 					})
 					->addColumn('clock_in', function ($row)
 					{
-						return $row->clock_in;
+						return $row->attendance_date.' '.$row->clock_in;
 					})
 					->addColumn('clock_out', function ($row)
 					{
-						return $row->clock_out;
+						return $row->attendance_date.' '.$row->clock_out;
+					})
+					->addColumn('added_by',function ($row)
+					{
+						return auth()->user()->first_name.' '.auth()->user()->last_name;
 					})
 					->addColumn('action', function ($row)
 					{
@@ -1253,7 +1273,7 @@ class AttendanceController extends Controller {
 							return '';
 						}
 					})
-					->rawColumns(['action'])
+					->rawColumns(['action','employee','staff_id','added_by'])
 					->make(true);
 			}
 
@@ -1273,12 +1293,22 @@ class AttendanceController extends Controller {
 
 	public function updateAttendanceStore(Request $request)
 	{
-		$data = $this->attendanceHandler($request);
-		Attendance::create($data);
+		// dd($request->all());
+		$employee_id=$request->employee_id;
+		$employees = explode(',', $employee_id);
+		foreach ($employees as $key => $employe) {
+			$data = $this->attendanceHandler($request,$employe);
+			// dd($data);
+			$data['employee_id'] = $employe;
+			$data['attendance_date'] = $request->attendance_date;
+			$data['clock_in'] = $request->clock_in;
+			$data['clock_out'] = $request->clock_out;
+			Attendance::create($data);
+		}
 		return response()->json(['success' => __('Data is successfully updated')]);
 	}
 
-	public function attendanceHandler($request)
+	public function attendanceHandler($request,$employe)
 	{
 		$validator = Validator::make($request->only('attendance_date', 'clock_in', 'clock_out'),
 			[
@@ -1293,7 +1323,7 @@ class AttendanceController extends Controller {
 			return response()->json(['errors' => $validator->errors()->all()]);
 		}
 
-		$employee_id = $request->employee_id;
+		$employee_id = $employe;
 		$attendance_date = $request->attendance_date;
 		try
 		{
@@ -1403,7 +1433,7 @@ class AttendanceController extends Controller {
 
 	public function updateAttendanceUpdate(Request $request)
 	{
-
+// dd($request->all());
 		$validator = Validator::make($request->only('attendance_date', 'clock_in', 'clock_out'),
 			[
 				'attendance_date' => 'required|date',
@@ -1430,8 +1460,12 @@ class AttendanceController extends Controller {
             return response()->json(['errors' => [__('Clock in cannot be greater than clock out')]]);
         }
 
+		// fix of multiple
+		$attendance=Attendance::find($request->edit_employee_id);
+
+		// end fix
         $id = $request->hidden_id;
-        $employee_id = $request->employee_id;
+        $employee_id = $attendance->employee_id;
 		$attendance_date = $request->attendance_date;
         $employee = Employee::with('officeShift')->findOrFail($employee_id);
 		$attendance_date_day = Carbon::parse($attendance_date);
