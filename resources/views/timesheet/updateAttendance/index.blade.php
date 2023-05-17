@@ -16,6 +16,21 @@
                         </select>
                     </div>
                     <div class="col-md-6">
+                        <select name="dept_id" id="dept_id"
+                                class="selectpicker form-control" 
+                                data-live-search="true" data-live-search-style="contains"
+                                title='Select Department...'>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <select name="designation_id" id="designation_id"
+                                class="selectpicker form-control" 
+                                data-live-search="true" data-live-search-style="contains"
+                                title='Select Designation...'>
+                        </select>
+                    </div>
+          
+                    <div class="col-md-6">
                         <select name="employee_id" id="employee_id"
                                 class="selectpicker form-control" multiple
                                 data-live-search="true" data-live-search-style="contains"
@@ -443,21 +458,71 @@
             })
         });
 
+        // $('.dynamic').change(function () {
+        //     if ($(this).val() !== '') {
+        //         let value = $(this).val();
+        //         let first_name = $(this).data('first_name');
+        //         let last_name = $(this).data('last_name');
+        //         let _token = $('input[name="_token"]').val();
+        //         $.ajax({
+        //             url: "{{ route('dynamic_employee') }}",
+        //             method: "POST",
+        //             data: {value: value, _token: _token, first_name: first_name, last_name: last_name},
+        //             success: function (result) {
+        //                 $('select').selectpicker("destroy");
+        //                 $('#employee_id').html(result);
+        //                 $('select').selectpicker();
+
+        //             }
+        //         });
+        //     }
+        // });
         $('.dynamic').change(function () {
             if ($(this).val() !== '') {
                 let value = $(this).val();
-                let first_name = $(this).data('first_name');
-                let last_name = $(this).data('last_name');
                 let _token = $('input[name="_token"]').val();
                 $.ajax({
-                    url: "{{ route('dynamic_employee') }}",
+                    url: "{{ route('dynamic_department') }}",
+                    method: "POST",
+                    data: {value: value, _token: _token,dependent:'department_name'},
+                    success: function (result) {
+                        $('select').selectpicker("destroy");
+                        $('#dept_id').html(result);
+                        $('select').selectpicker();
+                    }
+                });
+            }
+        });
+        $('#dept_id').change(function () {
+            if ($(this).val() !== '') {
+                let value = $(this).val();
+                let _token = $('input[name="_token"]').val();
+                $.ajax({
+                    url: "{{ route('dynamic_designation_department') }}",
+                    method: "POST",
+                    data: {value: value, _token: _token,designation_name:'designation_name'},
+                    success: function (result) {
+                        $('select').selectpicker("destroy");
+                        $('#designation_id').html(result);
+                        $('select').selectpicker();
+                    }
+                });
+            }
+        });
+        $('#designation_id').change(function () {
+            if ($(this).val() !== '') {
+                let value = $(this).val();
+                let first_name = 'first_name';
+                let last_name = 'last_name';
+                let _token = $('input[name="_token"]').val();
+                $.ajax({
+                    url: "{{ route('dynamic_designationEmployee') }}",
                     method: "POST",
                     data: {value: value, _token: _token, first_name: first_name, last_name: last_name},
                     success: function (result) {
                         $('select').selectpicker("destroy");
                         $('#employee_id').html(result);
                         $('select').selectpicker();
-
                     }
                 });
             }

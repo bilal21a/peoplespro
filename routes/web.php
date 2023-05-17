@@ -840,6 +840,7 @@ Route::group(['middleware' => ['XSS']], function ()
 	Route::post('dynamic_dependent/fetch_department', 'DynamicDependent@fetchDepartment')->name('dynamic_department');
 	Route::post('dynamic_dependent/fetch_employee', 'DynamicDependent@fetchEmployee')->name('dynamic_employee');
 	Route::post('dynamic_dependent/fetch_employee_department', 'DynamicDependent@fetchEmployeeDepartment')->name('dynamic_employee_department');
+	Route::post('dynamic_dependent/fetch_employee_deesignation', 'DynamicDependent@designationEmployee')->name('dynamic_designationEmployee');
 	Route::post('dynamic_dependent/fetch_designation_department', 'DynamicDependent@fetchDesignationDepartment')->name('dynamic_designation_department');
 	Route::post('dynamic_dependent/fetch_office_shifts', 'DynamicDependent@fetchOfficeShifts')->name('dynamic_office_shifts');
 	Route::post('dynamic_dependent/fetch_balance', 'DynamicDependent@fetchBalance')->name('dynamic_balance');
