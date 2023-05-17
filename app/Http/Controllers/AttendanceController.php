@@ -1298,11 +1298,13 @@ class AttendanceController extends Controller {
 		$employees = explode(',', $employee_id);
 		foreach ($employees as $key => $employe) {
 			$data = $this->attendanceHandler($request,$employe);
-			// dd($data);
 			$data['employee_id'] = $employe;
 			$data['attendance_date'] = $request->attendance_date;
 			$data['clock_in'] = $request->clock_in;
 			$data['clock_out'] = $request->clock_out;
+			$data['place_of_work'] = $request->hidden_place_of_work;
+			$data['amount_paid'] = $request->hidden_amount_paid;
+            // dd($data);
 			Attendance::create($data);
 		}
 		return response()->json(['success' => __('Data is successfully updated')]);
@@ -1331,7 +1333,6 @@ class AttendanceController extends Controller {
 			$clock_out = new DateTime($request->clock_out);
 		} catch (Exception $e)
 		{
-			return $e;
 		}
 
         $employee = Employee::with('officeShift')->findOrFail($employee_id);
@@ -1342,9 +1343,11 @@ class AttendanceController extends Controller {
 		{
 			$shift_in = new DateTime($employee->officeShift->$current_day_in);
             $shift_out = new DateTime($employee->officeShift->$current_day_out);
+            // dd($shift_in);
 		} catch (Exception $e)
 		{
-			return $e;
+            $shift_in = new DateTime();
+            $shift_out = new DateTime();
 		}
 
         $employee_attendance_last = Attendance::where('attendance_date', $attendance_date_day->format('Y-m-d'))
@@ -1361,7 +1364,7 @@ class AttendanceController extends Controller {
         if (!$employee_attendance_last)
         {
             // if employee is late
-            if ($clock_in > $shift_in)
+            if ($clock_in>$shift_in)
             {
                 $time_late = $shift_in->diff($clock_in)->format('%H:%I');
             } // if employee is early or on time

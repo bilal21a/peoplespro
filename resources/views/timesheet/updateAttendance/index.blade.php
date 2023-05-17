@@ -17,25 +17,31 @@
                     </div>
                     <div class="col-md-6">
                         <select name="dept_id" id="dept_id"
-                                class="selectpicker form-control" 
+                                class="selectpicker form-control"
                                 data-live-search="true" data-live-search-style="contains"
                                 title='Select Department...'>
                         </select>
                     </div>
                     <div class="col-md-6">
                         <select name="designation_id" id="designation_id"
-                                class="selectpicker form-control" 
+                                class="selectpicker form-control"
                                 data-live-search="true" data-live-search-style="contains"
                                 title='Select Designation...'>
                         </select>
                     </div>
-          
+
                     <div class="col-md-6">
                         <select name="employee_id" id="employee_id"
                                 class="selectpicker form-control" multiple
                                 data-live-search="true" data-live-search-style="contains"
                                 title='{{__('Selecting',['key'=>trans('file.Employee')])}}...'>
                         </select>
+                    </div>
+                    <div class="col-md-6">
+                        <input class="form-control" placeholder="Place of Work" id="place_of_work" name="place_of_work" type="text" >
+                    </div>
+                    <div class="col-md-6">
+                        <input class="form-control" placeholder="Amount Paid" id="amount_paid" name="amount_paid" type="text" >
                     </div>
                 </div>
             <div class="card">
@@ -140,6 +146,8 @@
                                         <input type="hidden" name="hidden_id" id="hidden_id" />
                                         <input type="hidden" name="employee_id" id="hidden_employee_id" />
                                         <input type="hidden" name="edit_employee_id" id="edit_employee_id" />
+                                        <input type="hidden" name="hidden_place_of_work" id="hidden_place_of_work" />
+                                        <input type="hidden" name="hidden_amount_paid" id="hidden_amount_paid" />
                                         <input type="submit" name="action_button" id="action_button" class="btn btn-warning" value={{trans('file.Add')}} />
                                     </div>
                                 </div>
@@ -305,6 +313,8 @@
             let employee_id = $('#employee_id').val();
             if (company_id !== '' && employee_id !== '') {
                 $('#hidden_employee_id').val($('#employee_id').val());
+                $('#hidden_place_of_work').val($('#place_of_work').val());
+                $('#hidden_amount_paid').val($('#amount_paid').val());
                 $('.modal-title').text('{{__('Add Attendance')}}');
                 $('#action_button').val('{{trans("file.Add")}}');
                 $('#action').val('{{trans("file.Add")}}');
