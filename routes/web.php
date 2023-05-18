@@ -847,6 +847,7 @@ Route::group(['middleware' => ['XSS']], function ()
 	Route::post('dynamic_dependent/company_employee/{ticket}', 'DynamicDependent@companyEmployee')->name('company_employee');
 	Route::post('dynamic_dependent/get_tax_rate', 'DynamicDependent@getTaxRate')->name('dynamic_tax_rate');
 	Route::post('dynamic_dependent/fetch_candidate', 'DynamicDependent@fetchCandidate')->name('dynamic_candidate');
+	Route::get('get_designation/{id}', 'DynamicDependent@get_designation')->name('get_designation');
 
 
 //Route::resource('employees', 'EmployeeController');

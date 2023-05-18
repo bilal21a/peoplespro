@@ -168,4 +168,9 @@ class DynamicDependent extends Controller
 
 		return $output;
 	}
+
+	public function get_designation($id)
+	{
+		return Designation::find($id);
+	}
 }
