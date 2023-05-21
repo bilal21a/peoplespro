@@ -13,6 +13,11 @@
                     </select>
                 </div>
                 <div class="col-md-6">
+                    <select name="shift_id" id="shift_id" class="selectpicker form-control" data-live-search="true"
+                        data-live-search-style="contains" title='Select Shift...'>
+                    </select>
+                </div>
+                <div class="col-md-6">
                     <select name="dept_id" id="dept_id" class="selectpicker form-control" data-live-search="true"
                         data-live-search-style="contains" title='Select Department...'>
                     </select>
@@ -578,20 +583,37 @@
                 if ($(this).val() !== '') {
                     let value = $(this).val();
                     let _token = $('input[name="_token"]').val();
+
                     $.ajax({
-                        url: "{{ route('dynamic_department') }}",
+                        url: "{{ route('dynamic_office_shifts') }}",
                         method: "POST",
                         data: {
                             value: value,
                             _token: _token,
-                            dependent: 'department_name'
+                            dependent: 'shift_name'
                         },
                         success: function(result) {
                             $('select').selectpicker("destroy");
-                            $('#dept_id').html(result);
+                            $('#shift_id').html(result);
                             $('select').selectpicker();
+
+                            $.ajax({
+                                url: "{{ route('dynamic_department') }}",
+                                method: "POST",
+                                data: {
+                                    value: value,
+                                    _token: _token,
+                                    dependent: 'department_name'
+                                },
+                                success: function(result) {
+                                    $('select').selectpicker("destroy");
+                                    $('#dept_id').html(result);
+                                    $('select').selectpicker();
+                                }
+                            });
                         }
                     });
+            
                 }
             });
             $('#dept_id').change(function() {
