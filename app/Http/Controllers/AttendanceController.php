@@ -31,6 +31,7 @@ class AttendanceController extends Controller {
 
 	public function index(Request $request)
 	{
+		// dd("here");
 		$logged_user = auth()->user();
 		//checking if date is selected else date is current
 		// if ($logged_user->can('view-attendance'))
@@ -66,23 +67,51 @@ class AttendanceController extends Controller {
 					->get();
 				}
 				else{
-					$employee = Employee::with(['officeShift', 'employeeAttendance' => function ($query) use ($selected_date)
-					{
-						$query->where('attendance_date', $selected_date);
-					},
-						'officeShift',
-						'company:id,company_name',
-						'employeeLeave' => function ($query) use ($selected_date)
-						{
-							$query->where('start_date', '<=', $selected_date)
-								->where('end_date', '>=', $selected_date);
-						}]
-					)
-					->select('id', 'company_id', 'first_name', 'last_name', 'office_shift_id')
-					->where('joining_date', '<=', $selected_date)
-                    ->where('is_active',1)
-                    ->where('exit_date',NULL)
-					->get();
+					$company_id = $request->company_id;
+					$shift_id = $request->shift_id;
+					$dept_id = $request->dept_id;
+					$designation_id = $request->designation_id;
+					// $employee = Employee::with(['officeShift', 'employeeAttendance' => function ($query) use ($selected_date)
+					// {
+					// 	$query->where('attendance_date', $selected_date);
+					// },
+					// 'officeShift',
+					// 'company:id,company_name',
+					// 'employeeLeave' => function ($query) use ($selected_date)
+					// {
+					// 	$query->where('start_date', '<=', $selected_date)
+					// 	->where('end_date', '>=', $selected_date);
+					// }
+					// ]
+					// )
+					// ->select('id', 'company_id', 'first_name', 'last_name', 'office_shift_id','department_id','designation_id','staff_id')
+					// ->where('joining_date', '<=', $selected_date)
+                    // ->where('is_active',1)
+                    // ->where('exit_date',NULL);
+
+					$employee = DB::table('employees')
+					->join('attendances', 'employees.id', '=', 'attendances.employee_id')
+					// ->select('employees.id', 'employees.company_id', 'employees.first_name', 'employees.last_name', 'employees.office_shift_id', 'employees.department_id', 'employees.designation_id', 'employees.staff_id')
+					->where('attendances.attendance_date', $selected_date)
+					->where('attendances.attendance_status', 'present')
+					->where('employees.joining_date', '<=', $selected_date)
+					->where('employees.is_active', 1)
+					->whereNull('employees.exit_date');
+					// dd($employee->first()->employeeAttendance);
+					if (!empty($company_id)) {
+						$employee->where('company_id', $company_id)->get();
+					}
+					if ($shift_id!=null) {
+						$employee->where('office_shift_id', $shift_id)->get();
+					}
+					if (!empty($dept_id)) {
+						$employee->where('department_id', $dept_id)->get();
+					}
+					if (!empty($designation_id)) {
+						$employee->where('designation_id', $designation_id)->get();
+					} 
+					$employee->get();
+					// dd($employee->get());
 				}
 
 
@@ -100,180 +129,207 @@ class AttendanceController extends Controller {
 					})
 					->addColumn('employee_name', function ($employee)
 					{
-						return $employee->full_name;
+						return $employee->first_name.' '.$employee->last_name;
 					})
-					->addColumn('company', function ($employee)
-					{
-						return $employee->company->company_name;
-					})
-					->addColumn('attendance_date', function ($employee) use ($selected_date)
-					{
-						//if there is no employee attendance
-						if ($employee->employeeAttendance->isEmpty())
-						{
-							return Carbon::parse($selected_date)->format(env('Date_Format'));
-						} else
-						{
-							//if there are employee attendance,get the first record
-							$attendance_row = $employee->employeeAttendance->first();
+					// ->addColumn('attendance_date', function ($employee) use ($selected_date)
+					// {
+					// 	//if there is no employee attendance
+					// 	if ($employee->employeeAttendance->isEmpty())
+					// 	{
+					// 		return Carbon::parse($selected_date)->format(env('Date_Format'));
+					// 	} else
+					// 	{
+					// 		//if there are employee attendance,get the first record
+					// 		$attendance_row = $employee->employeeAttendance->first();
 
-							return $attendance_row->attendance_date;
-						}
-					})
-					->addColumn('attendance_status', function ($employee) use ($holidays, $day)
-					{
-						//if there are employee attendance,get the first record
-						if ($employee->employeeAttendance->isEmpty())
-						{
-							if (is_null($employee->officeShift->$day ?? null) || ($employee->officeShift->$day == ''))
-							{
-								return __('Off Day');
-							}
+					// 		return $attendance_row->attendance_date;
+					// 	}
+					// })
+					// ->addColumn('attendance_status', function ($employee) use ($holidays, $day)
+					// {
+					// 	//if there are employee attendance,get the first record
+					// 	if ($employee->employeeAttendance->isEmpty())
+					// 	{
+					// 		if (is_null($employee->officeShift->$day ?? null) || ($employee->officeShift->$day == ''))
+					// 		{
+					// 			return __('Off Day');
+					// 		}
 
-							if ($holidays)
-							{
-								if ($employee->company_id == $holidays->company_id)
-								{
-									return trans('file.Holiday');
-								}
-							}
+					// 		if ($holidays)
+					// 		{
+					// 			if ($employee->company_id == $holidays->company_id)
+					// 			{
+					// 				return trans('file.Holiday');
+					// 			}
+					// 		}
 
 
-							if ($employee->employeeLeave->isEmpty())
-							{
-								return trans('file.Absent');
-							}
+					// 		if ($employee->employeeLeave->isEmpty())
+					// 		{
+					// 			return trans('file.Absent');
+					// 		}
 
-							return __('On leave');
+					// 		return __('On leave');
 
-						} else
-						{
-							$attendance_row = $employee->employeeAttendance->first();
+					// 	} else
+					// 	{
+					// 		$attendance_row = $employee->employeeAttendance->first();
 
-							return $attendance_row->attendance_status;
-						}
-					})
+					// 		return $attendance_row->attendance_status;
+					// 	}
+					// })
 					->addColumn('clock_in', function ($employee)
 					{
-						if ($employee->employeeAttendance->isEmpty())
-						{
-							return '---';
-						} else
-						{
-							$attendance_row = $employee->employeeAttendance->first();
+						// if ($employee->employeeAttendance->isEmpty())
+						// {
+						// 	return '---';
+						// } else
+						// {
+						// 	$attendance_row = $employee->employeeAttendance->first();
 
-							return $attendance_row->clock_in;
-						}
+							return $employee->clock_in??'---';
+						// }
 					})
 					->addColumn('clock_out', function ($employee)
 					{
-						if ($employee->employeeAttendance->isEmpty())
-						{
-							return '---';
-						} else
-						{
-							$attendance_row = $employee->employeeAttendance->last();
+						// if ($employee->employeeAttendance->isEmpty())
+						// {
+						// 	return '---';
+						// } else
+						// {
+						// 	$attendance_row = $employee->employeeAttendance->last();
 
-							return $attendance_row->clock_out;
-						}
+							return $employee->clock_out??'---';
+						// }
 					})
-					->addColumn('time_late', function ($employee)
-					{
-						if ($employee->employeeAttendance->isEmpty())
-						{
-							return '---';
-						} else
-						{
-							$attendance_row = $employee->employeeAttendance->first();
+					// ->addColumn('time_late', function ($employee)
+					// {
+					// 	if ($employee->employeeAttendance->isEmpty())
+					// 	{
+					// 		return '---';
+					// 	} else
+					// 	{
+					// 		$attendance_row = $employee->employeeAttendance->first();
 
-							return $attendance_row->time_late;
-						}
+					// 		return $attendance_row->time_late;
+					// 	}
+					// })
+					// ->addColumn('early_leaving', function ($employee)
+					// {
+					// 	if ($employee->employeeAttendance->isEmpty())
+					// 	{
+					// 		return '---';
+					// 	} else
+					// 	{
+					// 		$attendance_row = $employee->employeeAttendance->last();
+
+					// 		return $attendance_row->early_leaving;
+					// 	}
+					// })
+					->addColumn('amount_pad', function ($employee)
+					{
+						// if ($employee->employeeAttendance->isEmpty())
+						// {
+						// 	return '---';
+						// } else
+						// {
+						// 	$attendance_row = $employee->employeeAttendance->last();
+
+							return $employee->amount_paid??'---';
+						// }
 					})
-					->addColumn('early_leaving', function ($employee)
+					->addColumn('plce_work', function ($employee)
 					{
-						if ($employee->employeeAttendance->isEmpty())
-						{
-							return '---';
-						} else
-						{
-							$attendance_row = $employee->employeeAttendance->last();
+						// if ($employee->employeeAttendance->isEmpty())
+						// {
+						// 	return '---';
+						// } else
+						// {
+						// 	$attendance_row = $employee->employeeAttendance->last();
 
-							return $attendance_row->early_leaving;
-						}
+							return $employee->place_of_work??'---';
+						// }
 					})
 					->addColumn('overtime', function ($employee)
 					{
-						if ($employee->employeeAttendance->isEmpty())
-						{
-							return '---';
-						}
-                        else
-						{
-							$total = 0;
-							foreach ($employee->employeeAttendance as $attendance_row)
-							{
-								sscanf($attendance_row->overtime, '%d:%d', $hour, $min);
-								$total += $hour * 60 + $min;
-							}
-							if ($h = floor($total / 60))
-							{
-								$total %= 60;
-							}
+						return $employee->overtime=="00:00"?'---':$employee->overtime;
 
-							return sprintf('%02d:%02d', $h, $total);
-						}
+						// if ($employee->employeeAttendance->isEmpty())
+						// {
+						// 	return '---';
+						// }
+                        // else
+						// {
+						// 	$total = 0;
+						// 	foreach ($employee->employeeAttendance as $attendance_row)
+						// 	{
+						// 		sscanf($attendance_row->overtime, '%d:%d', $hour, $min);
+						// 		$total += $hour * 60 + $min;
+						// 	}
+						// 	if ($h = floor($total / 60))
+						// 	{
+						// 		$total %= 60;
+						// 	}
+
+						// 	return sprintf('%02d:%02d', $h, $total);
+						// }
 					})
 					->addColumn('total_work', function ($employee)
 					{
-						if ($employee->employeeAttendance->isEmpty())
-						{
-							return '---';
-						}
-                        else
-						{
-							$total = 0;
-							foreach ($employee->employeeAttendance as $attendance_row)
-							{
-								sscanf($attendance_row->total_work, '%d:%d', $hour, $min);
-								$total += $hour * 60 + $min;
-							}
-							if ($h = floor($total / 60))
-							{
-								$total %= 60;
-							}
-							return sprintf('%02d:%02d', $h, $total);
-						}
+						return $employee->total_work??'---';
+
+						// if ($employee->employeeAttendance->isEmpty())
+						// {
+						// 	return '---';
+						// }
+                        // else
+						// {
+						// 	$total = 0;
+						// 	foreach ($employee->employeeAttendance as $attendance_row)
+						// 	{
+						// 		sscanf($attendance_row->total_work, '%d:%d', $hour, $min);
+						// 		$total += $hour * 60 + $min;
+						// 	}
+						// 	if ($h = floor($total / 60))
+						// 	{
+						// 		$total %= 60;
+						// 	}
+						// 	return sprintf('%02d:%02d', $h, $total);
+						// }
 					})
 					->addColumn('total_rest', function ($employee)
 					{
-						if ($employee->employeeAttendance->isEmpty())
-						{
-							return '---';
-						}
-                        else
-						{
-							$total = 0;
-							foreach ($employee->employeeAttendance as $attendance_row)
-							{
-								//formatting in hour:min and separating them
-								sscanf($attendance_row->total_rest, '%d:%d', $hour, $min);
-								//converting in minute
-								$total += $hour * 60 + $min;
-							}
-							// if minute is greater than hour then $h= hour
-							if ($h = floor($total / 60))
-							{
-								$total %= 60;
-							}
-							//returning back to hour:minute format
-							return sprintf('%02d:%02d', $h, $total);
-						}
+						return $employee->total_rest=="00:00"?'---':$employee->total_rest;
+
+						// if ($employee->employeeAttendance->isEmpty())
+						// {
+						// 	return '---';
+						// }
+                        // else
+						// {
+						// 	$total = 0;
+						// 	foreach ($employee->employeeAttendance as $attendance_row)
+						// 	{
+						// 		//formatting in hour:min and separating them
+						// 		sscanf($attendance_row->total_rest, '%d:%d', $hour, $min);
+						// 		//converting in minute
+						// 		$total += $hour * 60 + $min;
+						// 	}
+						// 	// if minute is greater than hour then $h= hour
+						// 	if ($h = floor($total / 60))
+						// 	{
+						// 		$total %= 60;
+						// 	}
+						// 	//returning back to hour:minute format
+						// 	return sprintf('%02d:%02d', $h, $total);
+						// }
 					})
-					->rawColumns(['action'])
+					->rawColumns(['action','amount_pad','plce_work'])
 					->make(true);
 			}
+			$companies = company::select('id', 'company_name')->get();
 
-			return view('timesheet.attendance.attendance');
+			return view('timesheet.attendance.attendance',compact('companies'));
 		// }
 
 		return response()->json(['success' => __('You are not authorized')]);
@@ -1207,6 +1263,7 @@ class AttendanceController extends Controller {
 		}
 	}
 
+	// update attendence
 	public function updateAttendance(Request $request)
 	{
 		// dd($request->all());
