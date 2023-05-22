@@ -1232,6 +1232,7 @@ class AttendanceController extends Controller {
 		$des=designation::find($emp->designation_id);
 		if ($des->rate_type==1) {
 			$rate=$des->rate_per_shift;
+			$overtime_rate=$des->overtime_rate;
 			$present = $emp->employeeAttendance->where('attendance_date', $this->date_attendance[$index]);
 			if ($present->isNotEmpty())
 			{
@@ -1239,9 +1240,13 @@ class AttendanceController extends Controller {
 					$hours=$value->total_work;
 					list($hour, $minute) = explode(':', $hours);
 					$decimal = $hour + ($minute / 60);
+					$overtime_hours=$value->overtime;
+					list($hour, $minute) = explode(':', $overtime_hours);
+					$overtime_decimal = $hour + ($minute / 60);
 					
 					try {
-						$final=$decimal*$rate;
+						$final=round(($decimal*$rate)+($overtime_decimal*$overtime_rate));
+						
 					} catch (\Throwable $th) {
 						$final=0;
 					}
@@ -1271,40 +1276,40 @@ class AttendanceController extends Controller {
 		
 		// dd($des);
 		// return $index;
-		if (count($this->date_attendance) <= $index)
-		{
-			return '';
-		} else
-		{
-			$present = $emp->employeeAttendance->where('attendance_date', $this->date_attendance[$index]);
+		// if (count($this->date_attendance) <= $index)
+		// {
+		// 	return '';
+		// } else
+		// {
+		// 	$present = $emp->employeeAttendance->where('attendance_date', $this->date_attendance[$index]);
 
-			$leave = $emp->employeeLeave->where('start_date', '<=', $this->date_attendance[$index])
-				->where('end_date', '>=', $this->date_attendance[$index]);
+		// 	$leave = $emp->employeeLeave->where('start_date', '<=', $this->date_attendance[$index])
+		// 		->where('end_date', '>=', $this->date_attendance[$index]);
 
-			$holiday = $emp->company->companyHolidays->where('start_date', '<=', $this->date_attendance[$index])
-				->where('end_date', '>=', $this->date_attendance[$index]);
+		// 	$holiday = $emp->company->companyHolidays->where('start_date', '<=', $this->date_attendance[$index])
+		// 		->where('end_date', '>=', $this->date_attendance[$index]);
 
-			$day = strtolower(Carbon::parse($this->date_attendance[$index])->format('l')) . '_in';
+		// 	$day = strtolower(Carbon::parse($this->date_attendance[$index])->format('l')) . '_in';
 
-			if ($present->isNotEmpty())
-			{
-				$this->work_days++;
+		// 	if ($present->isNotEmpty())
+		// 	{
+		// 		$this->work_days++;
 
-				return 'P';
-			} elseif (!$emp->officeShift->$day)
-			{
-				return 'O';
-			} elseif ($leave->isNotEmpty())
-			{
-				return 'L';
-			} elseif ($holiday->isNotEmpty())
-			{
-				return 'H';
-			} else
-			{
-				return 'A';
-			}
-		}
+		// 		return 'P';
+		// 	} elseif (!$emp->officeShift->$day)
+		// 	{
+		// 		return 'O';
+		// 	} elseif ($leave->isNotEmpty())
+		// 	{
+		// 		return 'L';
+		// 	} elseif ($holiday->isNotEmpty())
+		// 	{
+		// 		return 'H';
+		// 	} else
+		// 	{
+		// 		return 'A';
+		// 	}
+		// }
 	}
 
 	// update attendence
