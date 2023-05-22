@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Attendance;
 use App\company;
+use App\designation;
 use App\Employee;
 use App\Holiday;
 use App\Imports\AttendancesImport;
@@ -1022,7 +1023,7 @@ class AttendanceController extends Controller {
 							'company:id,company_name',
 							'company.companyHolidays'
 						])
-							->select('id', 'company_id', 'first_name', 'last_name', 'office_shift_id')
+							->select('id', 'company_id', 'first_name', 'last_name', 'office_shift_id','designation_id')
 							->whereId($request->filter_employee)->get();
 
 					} elseif (!empty($request->filter_company))
@@ -1035,7 +1036,7 @@ class AttendanceController extends Controller {
 							'company:id,company_name',
 							'company.companyHolidays'
 						])
-							->select('id', 'company_id', 'first_name', 'last_name', 'office_shift_id')
+							->select('id', 'company_id', 'first_name', 'last_name', 'office_shift_id','designation_id')
 							->where('company_id', $request->filter_company)->where('is_active',1)
                             ->where('exit_date',NULL)->get();
 					}
@@ -1049,7 +1050,7 @@ class AttendanceController extends Controller {
 							'company:id,company_name',
 							'company.companyHolidays'
 						])
-							->select('id', 'company_id', 'first_name', 'last_name', 'office_shift_id')
+							->select('id', 'company_id', 'first_name', 'last_name', 'office_shift_id','designation_id')
                             ->where('is_active',1)
                             ->where('exit_date',NULL)
 							->get();
@@ -1073,6 +1074,7 @@ class AttendanceController extends Controller {
 					})
 					->addColumn('day1', function ($row)
 					{
+						// dd($this->checkAttendanceStatus($row, 0));
 						return $this->checkAttendanceStatus($row, 0);
 					})
 					->addColumn('day2', function ($row)
@@ -1226,7 +1228,49 @@ class AttendanceController extends Controller {
 
 	public function checkAttendanceStatus($emp, $index)
 	{
-
+		// dd($emp);
+		$des=designation::find($emp->designation_id);
+		if ($des->rate_type==1) {
+			$rate=$des->rate_per_shift;
+			$present = $emp->employeeAttendance->where('attendance_date', $this->date_attendance[$index]);
+			if ($present->isNotEmpty())
+			{
+				foreach ($present as $key => $value) {
+					$hours=$value->total_work;
+					list($hour, $minute) = explode(':', $hours);
+					$decimal = $hour + ($minute / 60);
+					
+					try {
+						$final=$decimal*$rate;
+					} catch (\Throwable $th) {
+						$final=0;
+					}
+					$total[$key]=$final;
+				}
+				$this->work_days++;
+				return array_sum($total);
+			}
+			$this->work_days++;
+			return 0;
+		} else {
+			$present = $emp->employeeAttendance->where('attendance_date', $this->date_attendance[$index]);
+			// dd($present);
+			if ($present->isNotEmpty())
+			{
+				
+				foreach ($present as $key => $value) {
+					$rate=$value->amount_paid;
+					$total[$key]=$rate;
+				}
+				$this->work_days++;
+				return array_sum($total);
+			}
+			$this->work_days++;
+			return 0;
+		}
+		
+		// dd($des);
+		// return $index;
 		if (count($this->date_attendance) <= $index)
 		{
 			return '';

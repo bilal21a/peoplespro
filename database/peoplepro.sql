@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: May 16, 2023 at 12:26 AM
--- Server version: 8.0.33-0ubuntu0.22.04.1
+-- Generation Time: May 22, 2023 at 08:31 AM
+-- Server version: 8.0.33-0ubuntu0.22.04.2
 -- PHP Version: 7.4.33
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -148,6 +148,8 @@ CREATE TABLE `attendances` (
   `overtime` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '00:00',
   `total_work` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '00:00',
   `total_rest` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '00:00',
+  `place_of_work` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `amount_paid` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `attendance_status` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'present'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -155,24 +157,27 @@ CREATE TABLE `attendances` (
 -- Dumping data for table `attendances`
 --
 
-INSERT INTO `attendances` (`id`, `employee_id`, `attendance_date`, `clock_in`, `clock_in_ip`, `clock_out`, `clock_out_ip`, `clock_in_out`, `time_late`, `early_leaving`, `overtime`, `total_work`, `total_rest`, `attendance_status`) VALUES
-(5, 10, '2021-03-30', '10:00', '', '14:00', '', 0, '00:00', '00:00', '00:00', '04:00', '00:00', 'present'),
-(6, 11, '2021-03-30', '10:05', '', '14:05', '', 0, '00:05', '00:00', '00:05', '04:00', '00:00', 'present'),
-(7, 12, '2021-03-30', '10:20', '', '14:50', '', 0, '00:20', '00:00', '00:50', '04:30', '00:00', 'present'),
-(15, 12, '2021-03-29', '12:00', '', '17:00', '', 0, '00:00', '00:00', '00:00', '05:00', '00:00', 'present'),
-(16, 11, '2021-03-29', '10:00', '', '17:00', '', 0, '00:00', '00:00', '03:00', '08:00', '00:00', 'present'),
-(17, 11, '2021-03-29', '09:00', '', '15:00', '', 0, '00:00', '00:00', '00:00', '06:00', '00:00', 'present'),
-(23, 38, '2021-03-29', '19:00', '', '15:00', '', 0, '09:00', '02:00', '00:00', '04:00', '00:00', 'present'),
-(25, 11, '2021-06-30', '10:00', '', '17:00', '', 0, '00:00', '00:00', '00:00', '08:00', '00:00', 'present'),
-(26, 11, '2021-07-01', '22:00', '', '17:00', '', 0, '12:00', '00:00', '03:00', '05:00', '00:00', 'present'),
-(46, 12, '2021-11-15', '14:17', '127.0.0.1', '14:23', '127.0.0.1', 0, '00:17', '00:17', '00:00', '00:06', '00:00', 'present'),
-(47, 12, '2021-11-15', '14:24', '127.0.0.1', '14:27', '127.0.0.1', 0, '00:00', '00:13', '00:00', '00:03', '00:01', 'present'),
-(48, 12, '2021-11-15', '14:32', '127.0.0.1', '14:34', '127.0.0.1', 0, '00:00', '00:06', '00:00', '00:02', '00:05', 'present'),
-(49, 12, '2021-11-15', '14:36', '127.0.0.1', '14:43', '127.0.0.1', 0, '00:00', '00:00', '00:03', '00:07', '00:02', 'present'),
-(50, 12, '2021-11-15', '14:46', '127.0.0.1', '15:27', '127.0.0.1', 0, '00:00', '00:00', '00:41', '00:41', '00:03', 'present'),
-(72, 11, '2023-05-08', '12:00', '', '20:00', '', 0, '03:00', '00:00', '00:00', '00:00', '00:00', 'present'),
-(73, 11, '2023-05-08', '00:00', '', '12:00', '', 0, '00:00', '05:00', '12:00', '20:00', '20:00', 'present'),
-(74, 11, '2023-05-15', '08:00', '', '19:00', '', 0, '00:00', '00:00', '03:00', '11:00', '00:00', 'present');
+INSERT INTO `attendances` (`id`, `employee_id`, `attendance_date`, `clock_in`, `clock_in_ip`, `clock_out`, `clock_out_ip`, `clock_in_out`, `time_late`, `early_leaving`, `overtime`, `total_work`, `total_rest`, `place_of_work`, `amount_paid`, `attendance_status`) VALUES
+(5, 38, '2023-05-01', '10:00', '', '14:00', '', 0, '00:00', '00:00', '00:00', '04:00', '00:00', NULL, '500', 'present'),
+(6, 11, '2023-05-01', '10:05', '', '14:05', '', 0, '00:05', '00:00', '00:05', '04:00', '00:00', NULL, NULL, 'present'),
+(7, 12, '2021-03-30', '10:20', '', '14:50', '', 0, '00:20', '00:00', '00:50', '04:30', '00:00', NULL, NULL, 'present'),
+(15, 12, '2021-03-29', '12:00', '', '17:00', '', 0, '00:00', '00:00', '00:00', '05:00', '00:00', NULL, NULL, 'present'),
+(16, 11, '2021-03-29', '10:00', '', '17:00', '', 0, '00:00', '00:00', '03:00', '08:00', '00:00', NULL, NULL, 'present'),
+(17, 11, '2021-03-29', '09:00', '', '15:00', '', 0, '00:00', '00:00', '00:00', '06:00', '00:00', NULL, NULL, 'present'),
+(23, 38, '2021-03-29', '19:00', '', '15:00', '', 0, '09:00', '02:00', '00:00', '04:00', '00:00', NULL, NULL, 'present'),
+(25, 11, '2021-06-30', '10:00', '', '17:00', '', 0, '00:00', '00:00', '00:00', '08:00', '00:00', NULL, NULL, 'present'),
+(26, 11, '2021-07-01', '22:00', '', '17:00', '', 0, '12:00', '00:00', '03:00', '05:00', '00:00', NULL, NULL, 'present'),
+(46, 12, '2021-11-15', '14:17', '127.0.0.1', '14:23', '127.0.0.1', 0, '00:17', '00:17', '00:00', '00:06', '00:00', NULL, NULL, 'present'),
+(47, 12, '2021-11-15', '14:24', '127.0.0.1', '14:27', '127.0.0.1', 0, '00:00', '00:13', '00:00', '00:03', '00:01', NULL, NULL, 'present'),
+(48, 12, '2021-11-15', '14:32', '127.0.0.1', '14:34', '127.0.0.1', 0, '00:00', '00:06', '00:00', '00:02', '00:05', NULL, NULL, 'present'),
+(49, 12, '2021-11-15', '14:36', '127.0.0.1', '14:43', '127.0.0.1', 0, '00:00', '00:00', '00:03', '00:07', '00:02', NULL, NULL, 'present'),
+(50, 12, '2021-11-15', '14:46', '127.0.0.1', '15:27', '127.0.0.1', 0, '00:00', '00:00', '00:41', '00:41', '00:03', NULL, NULL, 'present'),
+(72, 11, '2023-05-08', '12:00', '', '20:00', '', 0, '03:00', '00:00', '00:00', '00:00', '00:00', NULL, NULL, 'present'),
+(73, 11, '2023-05-08', '00:00', '', '12:00', '', 0, '00:00', '05:00', '12:00', '20:00', '20:00', NULL, NULL, 'present'),
+(74, 11, '2023-05-15', '08:00', '', '19:00', '', 0, '00:00', '00:00', '03:00', '11:00', '00:00', NULL, NULL, 'present'),
+(76, 13, '2023-05-16', '12:00', '', '12:00', '', 0, '03:00', '05:00', '00:00', '00:00', '00:00', NULL, NULL, 'present'),
+(79, 12, '2023-05-16', '14:10', '', '19:40', '', 0, '05:10', '00:00', '00:00', '05:30', '00:00', NULL, NULL, 'present'),
+(97, 38, '2023-05-22', '01:05PM', '', '08:38PM', '', 0, '04:05', '00:00', '00:00', '07:33', '00:00', 'Hazel Mobile', '234', 'present');
 
 -- --------------------------------------------------------
 
@@ -672,11 +677,11 @@ CREATE TABLE `designations` (
 --
 
 INSERT INTO `designations` (`id`, `designation_name`, `rate_type`, `rate_per_shift`, `overtime_rate`, `company_id`, `department_id`, `is_active`, `created_at`, `updated_at`) VALUES
-(1, 'Senior Programmer', NULL, NULL, NULL, 1, 1, NULL, '2020-07-27 09:21:30', '2020-07-27 09:21:30'),
-(2, 'Android Developer', NULL, NULL, NULL, 1, 1, NULL, '2020-07-27 09:28:30', '2020-07-27 09:28:52'),
-(3, 'Data Analyst', NULL, NULL, NULL, 1, 2, NULL, '2020-07-27 09:29:37', '2020-07-27 09:29:37'),
+(1, 'Senior Programmer', '1', NULL, NULL, 1, 1, NULL, '2020-07-27 09:21:30', '2020-07-27 09:21:30'),
+(2, 'Android Developer', '2', NULL, NULL, 1, 1, NULL, '2020-07-27 09:28:30', '2020-07-27 09:28:52'),
+(3, 'Data Analyst', '1', NULL, NULL, 1, 2, NULL, '2020-07-27 09:29:37', '2020-07-27 09:29:37'),
 (4, 'Marketing Analyst', NULL, NULL, NULL, 1, 2, NULL, '2020-07-27 09:30:02', '2020-07-27 09:30:02'),
-(5, 'Finance Manager', NULL, NULL, NULL, 1, 3, NULL, '2020-07-27 09:30:17', '2020-07-27 09:30:17'),
+(5, 'Finance Manager', '1', '100', '10', 1, 3, NULL, '2020-07-27 09:30:17', '2020-07-27 09:30:17'),
 (6, 'Trend Researcher', NULL, NULL, NULL, 2, 4, NULL, '2020-07-27 09:30:52', '2020-07-27 09:30:52'),
 (7, 'HR manager', NULL, NULL, NULL, 2, 5, NULL, '2020-07-27 09:31:05', '2020-07-27 09:31:05'),
 (8, 'Tyler Holmes', '1', 'Molestias sit reicie', 'Dolores id lorem est', 2, 4, NULL, '2023-05-15 19:58:05', '2023-05-15 19:58:05'),
@@ -2544,7 +2549,8 @@ CREATE TABLE `office_shifts` (
 --
 
 INSERT INTO `office_shifts` (`id`, `shift_name`, `default_shift`, `company_id`, `sunday_in`, `sunday_out`, `saturday_in`, `saturday_out`, `friday_in`, `friday_out`, `thursday_in`, `thursday_out`, `wednesday_in`, `wednesday_out`, `tuesday_in`, `tuesday_out`, `monday_in`, `monday_out`, `created_at`, `updated_at`) VALUES
-(1, 'Morning Shift', NULL, 1, '09:00AM', '05:00PM', '09:00AM', '05:00PM', '', '', '09:00AM', '05:00PM', '09:00AM', '05:00PM', '09:00AM', '05:00PM', '09:00AM', '05:00PM', '2020-07-27 04:06:46', '2022-09-14 06:19:29');
+(1, 'Morning Shift', NULL, 1, '09:00AM', '05:00PM', '09:00AM', '05:00PM', '09:00AM', '05:00PM', '09:00AM', '05:00PM', '09:00AM', '05:00PM', '09:00AM', '05:00PM', '09:00AM', '05:00PM', '2020-07-27 04:06:46', '2022-09-14 06:19:29'),
+(3, 'test shift', NULL, 9, '02:25PM', '12:00PM', '02:25PM', '12:00PM', '02:25PM', '12:00PM', '02:25PM', '12:00PM', '02:25PM', '12:00PM', '02:25PM', '12:00PM', '02:25PM', '12:00PM', '2023-05-16 18:08:01', '2023-05-16 18:09:24');
 
 -- --------------------------------------------------------
 
@@ -5102,7 +5108,7 @@ ALTER TABLE `asset_categories`
 -- AUTO_INCREMENT for table `attendances`
 --
 ALTER TABLE `attendances`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=75;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=98;
 
 --
 -- AUTO_INCREMENT for table `awards`
@@ -5402,7 +5408,7 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT for table `office_shifts`
 --
 ALTER TABLE `office_shifts`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `official_documents`
