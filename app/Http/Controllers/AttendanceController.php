@@ -1023,7 +1023,7 @@ class AttendanceController extends Controller {
 							'company:id,company_name',
 							'company.companyHolidays'
 						])
-							->select('id', 'company_id', 'first_name', 'last_name', 'office_shift_id','designation_id')
+							->select('id', 'company_id', 'first_name', 'last_name', 'office_shift_id','designation_id','staff_id','contact_no')
 							->whereId($request->filter_employee)->get();
 
 					} elseif (!empty($request->filter_company))
@@ -1036,7 +1036,7 @@ class AttendanceController extends Controller {
 							'company:id,company_name',
 							'company.companyHolidays'
 						])
-							->select('id', 'company_id', 'first_name', 'last_name', 'office_shift_id','designation_id')
+							->select('id', 'company_id', 'first_name', 'last_name', 'office_shift_id','designation_id','staff_id','contact_no')
 							->where('company_id', $request->filter_company)->where('is_active',1)
                             ->where('exit_date',NULL)->get();
 					}
@@ -1057,7 +1057,7 @@ class AttendanceController extends Controller {
 					}
 				}
 
-				return datatables()->of($employee)
+				$all_records= datatables()->of($employee)
 					->setRowId(function ($row)
 					{
 						$this->work_days = 0;
@@ -1218,6 +1218,37 @@ class AttendanceController extends Controller {
 						'date_range' => $this->date_range,
 					])
 					->make(true);
+
+					$records = json_decode($all_records->content());
+					$block = $records->data;
+					$newdata=[];
+					foreach ($block as $mykey=>$singleBlock) {
+						$keys=array_keys(get_object_vars($singleBlock));
+						foreach ($keys as $value) {
+							if (strpos($value, "day") === 0) {
+								$month_days[] = $value;
+							}
+						}
+						$show[$mykey]=false;
+						foreach ($month_days as $value) {
+							// dd($singleBlock->$value);
+							if ($singleBlock->$value != 0) {
+								$show[$mykey] = true;
+								array_push($newdata,$singleBlock);
+								// $newdata[$mykey]=(array) $singleBlock;
+								break;
+							}
+						}
+					}
+
+					$arr['draw'] = $records->draw;
+					$arr['recordsTotal'] = $records->recordsTotal;
+					$arr['date_range'] = $records->date_range;
+					$arr['recordsFiltered'] = $records->recordsFiltered;
+					$arr['data'] =  $newdata;
+					$arr['input'] = $records->input;
+					// $arr = json_decode(json_encode($arr, true));
+					return $arr;
 			}
 
 			return view('timesheet.monthlyAttendance.index', compact('companies'));
@@ -1225,53 +1256,57 @@ class AttendanceController extends Controller {
 		// return response()->json(['success' => __('You are not authorized')]);
 	}
 
-
 	public function checkAttendanceStatus($emp, $index)
 	{
 		// dd($emp);
 		$des=designation::find($emp->designation_id);
-		if ($des->rate_type==1) {
-			$rate=$des->rate_per_shift;
-			$overtime_rate=$des->overtime_rate;
-			$present = $emp->employeeAttendance->where('attendance_date', $this->date_attendance[$index]);
-			if ($present->isNotEmpty())
-			{
-				foreach ($present as $key => $value) {
-					$hours=$value->total_work;
-					list($hour, $minute) = explode(':', $hours);
-					$decimal = $hour + ($minute / 60);
-					$overtime_hours=$value->overtime;
-					list($hour, $minute) = explode(':', $overtime_hours);
-					$overtime_decimal = $hour + ($minute / 60);
-					
-					try {
-						$final=round(($decimal*$rate)+($overtime_decimal*$overtime_rate));
+		if (count($this->date_attendance) <= $index)
+		{
+			return 0;
+		} else{
+			if ($des->rate_type==1) {
+				$rate=$des->rate_per_shift;
+				$overtime_rate=$des->overtime_rate;
+				$present = $emp->employeeAttendance->where('attendance_date', $this->date_attendance[$index]);
+				if ($present->isNotEmpty())
+				{
+					foreach ($present as $key => $value) {
+						$hours=$value->total_work;
+						list($hour, $minute) = explode(':', $hours);
+						$decimal = $hour + ($minute / 60);
+						$overtime_hours=$value->overtime;
+						list($hour, $minute) = explode(':', $overtime_hours);
+						$overtime_decimal = $hour + ($minute / 60);
 						
-					} catch (\Throwable $th) {
-						$final=0;
+						try {
+							$final=round(($decimal*$rate)+($overtime_decimal*$overtime_rate));
+							
+						} catch (\Throwable $th) {
+							$final=0;
+						}
+						$total[$key]=$final;
 					}
-					$total[$key]=$final;
+					$this->work_days++;
+					return array_sum($total);
 				}
 				$this->work_days++;
-				return array_sum($total);
-			}
-			$this->work_days++;
-			return 0;
-		} else {
-			$present = $emp->employeeAttendance->where('attendance_date', $this->date_attendance[$index]);
-			// dd($present);
-			if ($present->isNotEmpty())
-			{
-				
-				foreach ($present as $key => $value) {
-					$rate=$value->amount_paid;
-					$total[$key]=$rate;
+				return 0;
+			} else {
+				$present = $emp->employeeAttendance->where('attendance_date', $this->date_attendance[$index]);
+				// dd($present);
+				if ($present->isNotEmpty())
+				{
+					
+					foreach ($present as $key => $value) {
+						$rate=$value->amount_paid;
+						$total[$key]=$rate;
+					}
+					$this->work_days++;
+					return array_sum($total);
 				}
 				$this->work_days++;
-				return array_sum($total);
+				return 0;
 			}
-			$this->work_days++;
-			return 0;
 		}
 		
 		// dd($des);
