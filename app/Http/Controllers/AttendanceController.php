@@ -1050,7 +1050,7 @@ class AttendanceController extends Controller {
 							'company:id,company_name',
 							'company.companyHolidays'
 						])
-							->select('id', 'company_id', 'first_name', 'last_name', 'office_shift_id','designation_id')
+							->select('id', 'company_id', 'first_name', 'last_name', 'office_shift_id','designation_id','staff_id','contact_no')
                             ->where('is_active',1)
                             ->where('exit_date',NULL)
 							->get();
