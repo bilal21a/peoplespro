@@ -28,6 +28,21 @@ Trait MonthlyWorkedHours {
 			return $sum_total;
 		}
 	}
+	public function totalPaidAmount($employee)
+	{
+		if($employee->employeeAttendance->isEmpty()){
+			return 0;
+		}else{
+			$total = 0;
+			foreach ($employee->employeeAttendance as $a)
+			{
+				$work=(int)$a->amount_paid;
+				$total += $work;
+				// dd($total);
+			}
+			return $total;
+		}
+	}
 
 
 

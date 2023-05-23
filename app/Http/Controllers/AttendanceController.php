@@ -967,11 +967,17 @@ class AttendanceController extends Controller {
 		$companies = Company::all('id', 'company_name');
 
 
-		$month_year = $request->filter_month_year;
+		try {
+			$month_year = $request->filter_month_year;
+			list($year, $week_number) = explode('-W', $month_year);
+			$first_date = date('Y-m-d', strtotime($year . 'W' . str_pad($week_number, 2, '0', STR_PAD_LEFT)));
+			$last_date = date('Y-m-d', strtotime($year . 'W' . str_pad($week_number, 2, '0', STR_PAD_LEFT) . ' +6 days'));
+		} catch (\Throwable $th) {
+			$month_year = date('Y-m-d');
+			$first_date = date('Y-m-d', strtotime('first day of ' . $month_year));
+			$last_date = date('Y-m-d', strtotime('last day of ' . $month_year));
+		}
 
-
-		$first_date = date('Y-m-d', strtotime('first day of ' . $month_year));
-		$last_date = date('Y-m-d', strtotime('last day of ' . $month_year));
 
 		$begin = new DateTime($first_date);
 		$end = new DateTime($last_date);
@@ -1201,10 +1207,35 @@ class AttendanceController extends Controller {
 					{
 						return $this->work_days;
 					})
+					// ->addColumn('total_amount_paid', function ($row)
+					// {
+					// 	return $this->totalPaidAmount($row);
+					// })
+					// ->addColumn('total_worked_hours', function ($row)
+					// {
+					// 	return $this->totalWorkedHours($row);
+					// })
+					->addColumn('total_amount_paid', function ($row)
+					{
+						$des= designation::find($row->designation_id);
+						// dd($des);
+						if ($des->rate_type==1) {
+							return '---';
+						} else {
+							return $this->totalPaidAmount($row);
+						}
+					})
 					->addColumn('total_worked_hours', function ($row)
 					{
-						return $this->totalWorkedHours($row);
+						$des= designation::find($row->designation_id);
+						if ($des->rate_type==1) {
+							return $this->totalWorkedHours($row);
+						} else {
+							return '---';
+						}
 					})
+
+
 					// ->addColumn('total_worked_hours', function ($row) use ($month_year)
 					// {
 					// 	if ($month_year) {

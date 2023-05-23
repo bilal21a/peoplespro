@@ -18,7 +18,9 @@
 
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <input class="form-control date" name="month_year" type="text"
+                                            {{-- <input class="form-control date" name="month_year" type="text"
+                                                id="month_year"> --}}
+                                            <input class="form-control" name="month_year" type="week"
                                                 id="month_year">
                                         </div>
                                     </div>
@@ -137,8 +139,8 @@
                         <th></th>
                         <th></th>
                         <th>{{ __('Worked Days') }}</th>
-                        {{-- <th>Staff Id</th> --}}
                         <th>{{ __('Total Worked Hours') }}</th>
+                        <th>Total Amount Paid</th>
                     </tr>
 
                 </thead>
@@ -378,6 +380,10 @@
                             {
                                 data: 'total_worked_hours',
                                 name: 'total_worked_hours',
+                            },
+                            {
+                                data: 'total_amount_paid',
+                                name: 'total_amount_paid',
                             },
 
                         ],
