@@ -1242,9 +1242,9 @@ class AttendanceController extends Controller {
 					}
 
 					$arr['draw'] = $records->draw;
-					$arr['recordsTotal'] = $records->recordsTotal;
+					$arr['recordsTotal'] = count($newdata);
 					$arr['date_range'] = $records->date_range;
-					$arr['recordsFiltered'] = $records->recordsFiltered;
+					$arr['recordsFiltered'] = count($newdata);
 					$arr['data'] =  $newdata;
 					$arr['input'] = $records->input;
 					// $arr = json_decode(json_encode($arr, true));

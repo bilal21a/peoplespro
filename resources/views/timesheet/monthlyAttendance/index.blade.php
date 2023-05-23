@@ -16,7 +16,7 @@
                                 @csrf
                                 <div class="row">
 
-                                    <div class="col-md-2">
+                                    <div class="col-md-6">
                                         <div class="form-group">
                                             <input class="form-control date" name="month_year" type="text"
                                                 id="month_year">
@@ -25,7 +25,7 @@
 
                                     {{-- if (Au@th::user()->role_users_id==1) --}}
                                     @if (Auth::user()->can('monthly-attendances'))
-                                        <div class="col-md-3">
+                                        <div class="col-md-6">
                                             <div class="form-group">
                                                 <select name="company_id" id="company_id"
                                                     class="form-control selectpicker dynamic" data-live-search="true"
@@ -41,7 +41,33 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-4">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <select name="shift_id" id="shift_id" class="selectpicker form-control"
+                                                    data-live-search="true" data-live-search-style="contains"
+                                                    title='Select Shift...'>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <select name="dept_id" id="dept_id" class="selectpicker form-control"
+                                                    data-live-search="true" data-live-search-style="contains"
+                                                    title='Select Department...'>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <select name="designation_id" id="designation_id"
+                                                    class="selectpicker form-control" data-live-search="true"
+                                                    data-live-search-style="contains" title='Select Designation...'>
+                                                </select>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="col-md-6">
                                             <div class="form-group">
                                                 <select name="employee_id" id="employee_id"
                                                     class="selectpicker form-control" data-live-search="true"
@@ -66,10 +92,10 @@
                     </div>
                 </div>
             </div>
-            <span class="attendace_mark_info mb-3">
+            {{-- <span class="attendace_mark_info mb-3">
                 <small>{{ trans('file.present') }} = P , {{ trans('file.Absent') }} = A ,{{ trans('file.Leave') }} = L ,
                     {{ trans('file.Holiday') }} = H ,{{ __('Off Day') }} = O</small>
-            </span>
+            </span> --}}
         </div>
         <div class="table-responsive">
             <table id="month_wise_attendance-table" class="table ">
@@ -447,14 +473,97 @@
             });
 
 
+            // $('.dynamic').change(function() {
+            //     if ($(this).val() !== '') {
+            //         let value = $(this).val();
+            //         let first_name = $(this).data('first_name');
+            //         let last_name = $(this).data('last_name');
+            //         let _token = $('input[name="_token"]').val();
+            //         $.ajax({
+            //             url: "{{ route('dynamic_employee') }}",
+            //             method: "POST",
+            //             data: {
+            //                 value: value,
+            //                 _token: _token,
+            //                 first_name: first_name,
+            //                 last_name: last_name
+            //             },
+            //             success: function(result) {
+            //                 $('select').selectpicker("destroy");
+            //                 $('#employee_id').html(result);
+            //                 $('select').selectpicker();
+
+            //             }
+            //         });
+            //     }
+            // });
+
+
             $('.dynamic').change(function() {
                 if ($(this).val() !== '') {
                     let value = $(this).val();
-                    let first_name = $(this).data('first_name');
-                    let last_name = $(this).data('last_name');
+                    let _token = $('input[name="_token"]').val();
+
+                    $.ajax({
+                        url: "{{ route('dynamic_office_shifts') }}",
+                        method: "POST",
+                        data: {
+                            value: value,
+                            _token: _token,
+                            dependent: 'shift_name'
+                        },
+                        success: function(result) {
+                            $('select').selectpicker("destroy");
+                            $('#shift_id').html(result);
+                            $('select').selectpicker();
+
+                            $.ajax({
+                                url: "{{ route('dynamic_department') }}",
+                                method: "POST",
+                                data: {
+                                    value: value,
+                                    _token: _token,
+                                    dependent: 'department_name'
+                                },
+                                success: function(result) {
+                                    $('select').selectpicker("destroy");
+                                    $('#dept_id').html(result);
+                                    $('select').selectpicker();
+                                }
+                            });
+                        }
+                    });
+            
+                }
+            });
+            $('#dept_id').change(function() {
+                if ($(this).val() !== '') {
+                    let value = $(this).val();
                     let _token = $('input[name="_token"]').val();
                     $.ajax({
-                        url: "{{ route('dynamic_employee') }}",
+                        url: "{{ route('dynamic_designation_department') }}",
+                        method: "POST",
+                        data: {
+                            value: value,
+                            _token: _token,
+                            designation_name: 'designation_name'
+                        },
+                        success: function(result) {
+                            $('select').selectpicker("destroy");
+                            $('#designation_id').html(result);
+                            $('select').selectpicker();
+                        }
+                    });
+                }
+            });
+            $('#designation_id').change(function() {
+                if ($(this).val() !== '') {
+                    let value = $(this).val();
+                    let first_name = 'first_name';
+                    let last_name = 'last_name';
+                    let _token = $('input[name="_token"]').val();
+                    $.ajax({
+                        url: "{{ route('dynamic_designationEmployee') }}",
                         method: "POST",
                         data: {
                             value: value,
@@ -467,6 +576,21 @@
                             $('#employee_id').html(result);
                             $('select').selectpicker();
 
+                            var des_url = "{{ route('get_designation', [':id']) }}";
+                            des_url = des_url.replace(':id', value);
+                            $.ajax({
+                                url: des_url,
+                                success: function(res) {
+                                    var rate_type = res.rate_type != null ? res.rate_type : 1;
+                                    if (rate_type == 1) {
+                                        $(`#amount_paid`).hide()
+                                    } else {
+                                        $(`#amount_paid`).show()
+
+                                    }
+
+                                }
+                            })
                         }
                     });
                 }
