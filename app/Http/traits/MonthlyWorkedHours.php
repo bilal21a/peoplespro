@@ -3,7 +3,7 @@
 
 namespace App\Http\traits;
 
-
+use App\designation;
 
 Trait MonthlyWorkedHours {
 
@@ -33,14 +33,41 @@ Trait MonthlyWorkedHours {
 		if($employee->employeeAttendance->isEmpty()){
 			return 0;
 		}else{
-			$total = 0;
-			foreach ($employee->employeeAttendance as $a)
-			{
-				$work=(int)$a->amount_paid;
-				$total += $work;
-				// dd($total);
+			$des= designation::find($employee->designation_id);
+
+			if ($des->rate_type==1) {
+				$total = 0;
+				foreach ($employee->employeeAttendance as $a)
+				{
+					// dd($a);
+					$rate=$des->rate_per_shift;
+					$overtime_rate=$des->overtime_rate;
+
+					$hours=$a->total_work;
+					list($hour, $minute) = explode(':', $hours);
+					$decimal = $hour + ($minute / 60);
+					$overtime_hours=$a->overtime;
+					list($hour, $minute) = explode(':', $overtime_hours);
+					$overtime_decimal = $hour + ($minute / 60);
+					
+					try {
+						$final=round(($decimal*$rate)+($overtime_decimal*$overtime_rate));
+						
+					} catch (\Throwable $th) {
+						$final=0;
+					}
+					$total+=$final;
+				}
+				return $total;
+			}else{
+				$total = 0;
+				foreach ($employee->employeeAttendance as $a)
+				{
+					$work=(int)$a->amount_paid;
+					$total += $work;
+				}
+				return $total;
 			}
-			return $total;
 		}
 	}
 

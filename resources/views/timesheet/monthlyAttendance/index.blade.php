@@ -20,8 +20,7 @@
                                         <div class="form-group">
                                             {{-- <input class="form-control date" name="month_year" type="text"
                                                 id="month_year"> --}}
-                                            <input class="form-control" name="month_year" type="week"
-                                                id="month_year">
+                                            <input class="form-control" name="month_year" type="week" id="month_year">
                                         </div>
                                     </div>
 
@@ -43,14 +42,6 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <select name="shift_id" id="shift_id" class="selectpicker form-control"
-                                                    data-live-search="true" data-live-search-style="contains"
-                                                    title='Select Shift...'>
-                                                </select>
-                                            </div>
-                                        </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <select name="dept_id" id="dept_id" class="selectpicker form-control"
@@ -138,8 +129,8 @@
                         <th></th>
                         <th></th>
                         <th></th>
-                        <th>{{ __('Worked Days') }}</th>
-                        <th>{{ __('Total Worked Hours') }}</th>
+                        {{-- <th>{{ __('Worked Days') }}</th>
+                        <th>{{ __('Total Worked Hours') }}</th> --}}
                         <th>Total Amount Paid</th>
                     </tr>
 
@@ -147,8 +138,6 @@
             </table>
         </div>
     </section>
-
-
 
 @endsection
 
@@ -167,10 +156,10 @@
                     autoclose: true,
                 }).datepicker("setDate", new Date());
 
-                fill_datatable();
+                // fill_datatable();
 
                 function fill_datatable(filter_company = '', filter_employee = '', filter_month_year = $(
-                    '#month_year').val()) {
+                    '#month_year').val(), dept_id, designation_id) {
                     $('#details_month_year').html($('#month_year').val());
                     let table_table = $('#month_wise_attendance-table').DataTable({
                         initComplete: function() {
@@ -211,6 +200,8 @@
                                 filter_company: filter_company,
                                 filter_employee: filter_employee,
                                 filter_month_year: filter_month_year,
+                                department_id: dept_id,
+                                designation_id: designation_id,
                                 "_token": "{{ csrf_token() }}"
                             },
                             // success: function (data) {
@@ -369,18 +360,14 @@
                                 data: 'day31',
                                 name: 'day31',
                             },
-                            {
-                                data: 'worked_days',
-                                name: 'worked_days',
-                            },
                             // {
-                            //     data: 'staff_id',
-                            //     name: 'staff_id',
+                            //     data: 'worked_days',
+                            //     name: 'worked_days',
                             // },
-                            {
-                                data: 'total_worked_hours',
-                                name: 'total_worked_hours',
-                            },
+                            // {
+                            //     data: 'total_worked_hours',
+                            //     name: 'total_worked_hours',
+                            // },
                             {
                                 data: 'total_amount_paid',
                                 name: 'total_amount_paid',
@@ -469,9 +456,13 @@
                     var filter_company = $('#company_id').val();
                     var filter_employee = $('#employee_id').val();
                     var filter_month_year = $('#month_year').val();
-                    if (filter_company !== '' && filter_month_year !== '') {
+                    var dept_id = $('#dept_id').val();
+                    var designation_id = $('#designation_id').val();
+                    if (filter_company !== '' && filter_month_year !== '' && dept_id != '' &&
+                        designation_id != '') {
                         $('#month_wise_attendance-table').DataTable().destroy();
-                        fill_datatable(filter_company, filter_employee, filter_month_year);
+                        fill_datatable(filter_company, filter_employee, filter_month_year, dept_id,
+                            designation_id);
                     } else {
                         alert('{{ __('Select at least one filter option') }}');
                     }
@@ -511,35 +502,19 @@
                     let _token = $('input[name="_token"]').val();
 
                     $.ajax({
-                        url: "{{ route('dynamic_office_shifts') }}",
+                        url: "{{ route('dynamic_department') }}",
                         method: "POST",
                         data: {
                             value: value,
                             _token: _token,
-                            dependent: 'shift_name'
+                            dependent: 'department_name'
                         },
                         success: function(result) {
                             $('select').selectpicker("destroy");
-                            $('#shift_id').html(result);
+                            $('#dept_id').html(result);
                             $('select').selectpicker();
-
-                            $.ajax({
-                                url: "{{ route('dynamic_department') }}",
-                                method: "POST",
-                                data: {
-                                    value: value,
-                                    _token: _token,
-                                    dependent: 'department_name'
-                                },
-                                success: function(result) {
-                                    $('select').selectpicker("destroy");
-                                    $('#dept_id').html(result);
-                                    $('select').selectpicker();
-                                }
-                            });
                         }
                     });
-            
                 }
             });
             $('#dept_id').change(function() {
@@ -587,7 +562,8 @@
                             $.ajax({
                                 url: des_url,
                                 success: function(res) {
-                                    var rate_type = res.rate_type != null ? res.rate_type : 1;
+                                    var rate_type = res.rate_type != null ? res
+                                        .rate_type : 1;
                                     if (rate_type == 1) {
                                         $(`#amount_paid`).hide()
                                     } else {

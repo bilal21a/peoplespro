@@ -1043,7 +1043,10 @@ class AttendanceController extends Controller {
 							'company.companyHolidays'
 						])
 							->select('id', 'company_id', 'first_name', 'last_name', 'office_shift_id','designation_id','staff_id','contact_no')
-							->where('company_id', $request->filter_company)->where('is_active',1)
+							->where('company_id', $request->filter_company)
+							->where('department_id', $request->department_id)
+							->where('designation_id', $request->designation_id)
+							->where('is_active',1)
                             ->where('exit_date',NULL)->get();
 					}
 					else
@@ -1203,10 +1206,10 @@ class AttendanceController extends Controller {
 					{
 						return $this->checkAttendanceStatus($row, 30);
 					})
-					->addColumn('worked_days', function ($row)
-					{
-						return $this->work_days;
-					})
+					// ->addColumn('worked_days', function ($row)
+					// {
+					// 	return $this->work_days;
+					// })
 					// ->addColumn('total_amount_paid', function ($row)
 					// {
 					// 	return $this->totalPaidAmount($row);
@@ -1217,23 +1220,17 @@ class AttendanceController extends Controller {
 					// })
 					->addColumn('total_amount_paid', function ($row)
 					{
-						$des= designation::find($row->designation_id);
-						// dd($des);
-						if ($des->rate_type==1) {
-							return '---';
-						} else {
-							return $this->totalPaidAmount($row);
-						}
+						return $this->totalPaidAmount($row);
 					})
-					->addColumn('total_worked_hours', function ($row)
-					{
-						$des= designation::find($row->designation_id);
-						if ($des->rate_type==1) {
-							return $this->totalWorkedHours($row);
-						} else {
-							return '---';
-						}
-					})
+					// ->addColumn('total_worked_hours', function ($row)
+					// {
+					// 	$des= designation::find($row->designation_id);
+					// 	if ($des->rate_type==1) {
+					// 		return $this->totalWorkedHours($row);
+					// 	} else {
+					// 		return '---';
+					// 	}
+					// })
 
 
 					// ->addColumn('total_worked_hours', function ($row) use ($month_year)
@@ -1250,10 +1247,14 @@ class AttendanceController extends Controller {
 					])
 					->make(true);
 
+
 					$records = json_decode($all_records->content());
 					$block = $records->data;
 					$newdata=[];
+					$sum=[];
+					$month_days=[];
 					foreach ($block as $mykey=>$singleBlock) {
+						// dd($singleBlock);
 						$keys=array_keys(get_object_vars($singleBlock));
 						foreach ($keys as $value) {
 							if (strpos($value, "day") === 0) {
@@ -1261,8 +1262,8 @@ class AttendanceController extends Controller {
 							}
 						}
 						$show[$mykey]=false;
+						$sum[$mykey]=$singleBlock->total_amount_paid;
 						foreach ($month_days as $value) {
-							// dd($singleBlock->$value);
 							if ($singleBlock->$value != 0) {
 								$show[$mykey] = true;
 								array_push($newdata,$singleBlock);
@@ -1271,6 +1272,19 @@ class AttendanceController extends Controller {
 							}
 						}
 					}
+					// $dummyrow=$block[0];
+					$dummyrow['total_amount_paid']=array_sum($sum);
+					$dummyrow['employee_name']="Total";
+					$dummyrow['staff_id']="";
+					$dummyrow['contact_no']="";
+					$dummyrow['id']="";
+					foreach ($month_days as $day) {
+						$dummyrow[$day]="";
+					}
+					$dummyrow['DT_RowId']=null;
+					// dd(json_decode(json_encode($dummyrow),false));
+
+					array_push($newdata,json_decode(json_encode($dummyrow),false));
 
 					$arr['draw'] = $records->draw;
 					$arr['recordsTotal'] = count($newdata);
