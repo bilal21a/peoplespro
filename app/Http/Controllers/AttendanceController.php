@@ -1324,7 +1324,7 @@ class AttendanceController extends Controller {
 						$overtime_decimal = $hour + ($minute / 60);
 						
 						try {
-							$final=round(($decimal*$rate)+($overtime_decimal*$overtime_rate));
+							$final=round(($rate)+($overtime_decimal*$overtime_rate));
 							
 						} catch (\Throwable $th) {
 							$final=0;
@@ -1470,10 +1470,12 @@ class AttendanceController extends Controller {
 
 	public function updateAttendanceGet($id)
 	{
-		$attendance = Attendance::select('id', 'clock_in', 'clock_out', 'attendance_date')
+		$attendance = Attendance::select('id', 'clock_in', 'clock_out', 'attendance_date','place_of_work','amount_paid','employee_id')
 			->findOrFail($id);
+		$des=designation::find( Employee::find($attendance->employee_id)->designation_id);
         $attendance->clock_in = (new DateTime($attendance->clock_in))->format('h:iA');
         $attendance->clock_out = (new DateTime($attendance->clock_out))->format('h:iA');
+        $attendance->designation_type = $des->rate_type;
 		return response()->json(['data' => $attendance]);
 	}
 
@@ -1623,11 +1625,12 @@ class AttendanceController extends Controller {
 	public function updateAttendanceUpdate(Request $request)
 	{
 // dd($request->all());
-		$validator = Validator::make($request->only('attendance_date', 'clock_in', 'clock_out'),
+		$validator = Validator::make($request->only('attendance_date', 'clock_in', 'clock_out','place_of_work'),
 			[
 				'attendance_date' => 'required|date',
 				'clock_in' => 'required',
-				'clock_out' => 'required'
+				'clock_out' => 'required',
+				'place_of_work' => 'required'
 			]);
 
 
@@ -1716,6 +1719,8 @@ class AttendanceController extends Controller {
 					$data['clock_in'] = $clock_in->format('H:i');
 					$data['clock_out'] = $clock_out->format('H:i');
 					$data['clock_in_out'] = 0;
+					$data['place_of_work'] = $request->place_of_work;
+					$data['amount_paid'] = $request->amount_paid;
 					$data['time_late'] = $time_late;
 					$data['early_leaving'] = $early_leaving;
 

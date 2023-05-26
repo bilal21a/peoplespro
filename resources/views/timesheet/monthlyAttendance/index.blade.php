@@ -5,7 +5,7 @@
         <div class="container-fluid">
             <div class="card mb-4">
                 <div class="card-header with-border">
-                    <h3 class="card-title text-center">{{ __('Monthly Attendance Info') }}
+                    <h3 class="card-title text-center">Weekly Earnigs Info
                         <hr><span id="details_month_year" class="thin-text"></span>
                     </h3>
                 </div>
@@ -131,7 +131,7 @@
                         <th></th>
                         {{-- <th>{{ __('Worked Days') }}</th>
                         <th>{{ __('Total Worked Hours') }}</th> --}}
-                        <th>Total Amount Paid</th>
+                        <th>Total Amount</th>
                     </tr>
 
                 </thead>

@@ -595,7 +595,7 @@
                             <!--New added-->
                             <li id="attendance"><a href="{{route('attendances.index')}}">{{__('Daily Attendances')}}</a></li>
                             <li id="date_wise_attendance"><a href="{{route('date_wise_attendances.index')}}"> {{__('Date wise Attendances')}}</a></li>
-                            <li id="monthly_attendance"><a href="{{route('monthly_attendances.index')}}"> {{__('Monthly Attendances')}}</a></li>
+                            <li id="monthly_attendance"><a href="{{route('monthly_attendances.index')}}"> Weekly Earnigs</a></li>
                             <!--New added End-->
 
                             {{-- @can('report-attendance')

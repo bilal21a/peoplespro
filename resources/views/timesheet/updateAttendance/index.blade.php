@@ -160,6 +160,14 @@
                                     <input type="text" name="clock_out" id="clock_out_edit" class="form-control time"
                                         value="" required>
                                 </div>
+                                <div class="col-md-6 form-group edit_show_form">
+                                    <label for="place_of_work"><strong>Place of Work</strong></label>
+                                    <input type="text" name="place_of_work" id="place_of_work_edit" class="form-control">
+                                </div>
+                                <div class="col-md-6 form-group edit_show_form amount_paid_edit_block">
+                                    <label for="amount_paid"><strong>Amount Paid</strong></label>
+                                    <input type="text" name="amount_paid" id="amount_paid_edit" class="form-control">
+                                </div>
                                 <div class="container">
                                     <div class="form-group" align="center">
                                         <input type="hidden" name="action" id="action" />
@@ -374,35 +382,36 @@
                 let attendance_date2 = $('#attendance_date2').val();
                 let company_id = $('#company_id').val();
                 let employee_id = $('#employee_id').val();
+                let designation_id = $('#designation_id').val();
                 if (attendance_date1 !== '' && attendance_date2 !== '' && company_id !== '' && employee_id !==
-                    '') {
+                    '' && designation_id!='') {
                     $('#update_attendance-table').DataTable().destroy();
                     fill_datatable(attendance_date1, attendance_date2, company_id, employee_id);
                     $('#hidden_employee_id').val($('#employee_id').val());
                 } else {
-                    let data_name = '';
-                    if (company_id == '') {
-                        data_name += '{{ __('Company') }}';
-                    }
-                    if (employee_id == '') {
-                        if (data_name != '') {
-                            data_name += ', ';
-                        }
-                        data_name += '{{ __('Employee') }}';
-                    }
-                    if (attendance_date1 == '') {
-                        if (data_name != '') {
-                            data_name += ', ';
-                        }
-                        data_name += '{{ __('Start Date') }}';
-                    }
-                    if (attendance_date2 == '') {
-                        if (data_name != '') {
-                            data_name += ', ';
-                        }
-                        data_name += '{{ __('End Date') }}';
-                    }
-                    alert('{{ __('Select') }} ' + data_name + '.');
+                    // let data_name = '';
+                    // if (company_id == '') {
+                    //     data_name += '{{ __('Company') }}';
+                    // }
+                    // if (employee_id == '') {
+                    //     if (data_name != '') {
+                    //         data_name += ', ';
+                    //     }
+                    //     data_name += '{{ __('Employee') }}';
+                    // }
+                    // if (attendance_date1 == '') {
+                    //     if (data_name != '') {
+                    //         data_name += ', ';
+                    //     }
+                    //     data_name += '{{ __('Start Date') }}';
+                    // }
+                    // if (attendance_date2 == '') {
+                    //     if (data_name != '') {
+                    //         data_name += ', ';
+                    //     }
+                    //     data_name += '{{ __('End Date') }}';
+                    // }
+                    alert('{{ __('Select') }} Company, Employee, Designation, Start Date, End Date');
                 }
 
             });
@@ -412,33 +421,41 @@
                 $('#att_date_edit_show_hide').show();
                 let company_id = $('#company_id').val();
                 let employee_id = $('#employee_id').val();
-                if (company_id !== '' && employee_id !== '') {
+                var dept_id = $('#dept_id').val();
+                var designation_id = $('#designation_id').val();
+                let place_of_work = $('#place_of_work').val();
+                let amount_paid = $('#amount_paid').val();
+                if (company_id !== '' && employee_id !== '' && employee_id !== ''&& dept_id !== ''&& designation_id !== ''&& place_of_work !== '') {
                     $('#hidden_employee_id').val($('#employee_id').val());
                     $('#hidden_place_of_work').val($('#place_of_work').val());
                     $('#hidden_amount_paid').val($('#amount_paid').val());
                     $('.modal-title').text('{{ __('Add Attendance') }}');
                     $('#action_button').val('{{ trans('file.Add') }}');
                     $('#action').val('{{ trans('file.Add') }}');
+                    $('.edit_show_form').hide()
+
                     $('#editModal').modal('show');
                 } else {
-                    let data_name = '';
-                    if (company_id == '') {
-                        data_name += '{{ __('Company') }}';
-                    }
-                    if (employee_id == '') {
-                        if (data_name != '') {
-                            data_name += ', ';
-                        }
-                        data_name += '{{ __('Employee') }}';
-                    }
-                    alert('{{ __('Select') }} ' + data_name + '.');
+                    // let data_name = '';
+                    // if (company_id == '') {
+                    //     data_name += '{{ __('Company') }}';
+                    // }
+                    // if (employee_id == '') {
+                    //     if (data_name != '') {
+                    //         data_name += ', ';
+                    //     }
+                    //     data_name += '{{ __('Employee') }}';
+                    // }
+                    alert('{{ __('Select') }} all feilds');
                 }
             });
 
             $(document).on('click', '.edit', function() {
                 let id = $(this).attr('id');
                 console.log('id: ', id);
+                $('.edit_show_form').show()
                 $('#edit_employee_id').val(id);
+
                 let target = "{{ route('update_attendances.index') }}/" + id + '/get';
                 $.ajax({
                     url: target,
@@ -448,6 +465,14 @@
                         $('#att_date_edit_show_hide').hide();
                         $('#clock_in_edit').val(html.data.clock_in);
                         $('#clock_out_edit').val(html.data.clock_out);
+                        $('#place_of_work_edit').val(html.data.place_of_work);
+                        if (html.data.designation_type!=1) {
+                            $('#amount_paid_edit').val(html.data.amount_paid);   
+                            $('.amount_paid_edit_block').show()
+                        }else{
+                            $('#amount_paid_edit').val(null);   
+                            $('.amount_paid_edit_block').hide()
+                        }
 
                         $('#hidden_id').val(html.data.id);
                         $('.modal-title').text(html.data.attendance_date);
@@ -483,7 +508,8 @@
                                 html = '<div class="alert alert-success">' + data.success +
                                     '</div>';
                                 $('#edit_form')[0].reset();
-                                $('#update_attendance-table').DataTable().ajax.reload();
+                                fill_datatable();
+                                // $('#update_attendance-table').DataTable().ajax.reload();
                             }
                             $('#form_result').html(html).slideDown(300).delay(5000).slideUp(300);
                         }
@@ -611,6 +637,20 @@
                                     $('select').selectpicker();
                                 }
                             });
+                        }
+                    });
+
+                    let first_name = $(this).data('first_name');
+                    let last_name = $(this).data('last_name');
+                    $.ajax({
+                        url: "{{ route('dynamic_employee') }}",
+                        method: "POST",
+                        data: {value: value, _token: _token, first_name: first_name, last_name: last_name},
+                        success: function (result) {
+                            $('select').selectpicker("destroy");
+                            $('#employee_id').html(result);
+                            $('select').selectpicker();
+
                         }
                     });
             
