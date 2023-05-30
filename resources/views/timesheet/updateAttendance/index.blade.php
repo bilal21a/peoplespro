@@ -106,23 +106,10 @@
                         <th>Place of Work</th>
                         <th>Time/date in</th>
                         <th>Time/date out</th>
+                        <th>Amount paid</th>
                         <th>Rest Time</th>
                         <th>Working hrs</th>
                         <th>Overtime</th>
-                        <th>Added by</th>
-                        <th class="not-exported">{{ trans('file.action') }}</th>
-                    </tr>
-                </thead>
-            </table>
-            <table id="update_attendance-table" class="table type2-table" style="display: none">
-                <thead>
-                    <tr>
-                        <th>Employee Name</th>
-                        <th>Staff Id</th>
-                        <th>Place of Work</th>
-                        <th>Time/date in</th>
-                        <th>Time/date out</th>
-                        <th>Amount paid</th>
                         <th>Added by</th>
                         <th class="not-exported">{{ trans('file.action') }}</th>
                     </tr>
@@ -237,55 +224,29 @@
                         success: function(res) {
                             console.log('res: ', res);
                             var rate_type = res.rate_type != null ? res.rate_type : 1
-                            if (rate_type == 1) {
-                                $(`.type1-table`).show()
-                                $(`.type2-table`).hide()
-                                var cols = [{
-                                        data: 'employee',
-                                        name: 'employee'
-                                    },
-                                    {
-                                        data: 'staff_id',
-                                        name: 'staff_id'
-                                    },
-                                    {
-                                        data: 'place_of_work',
-                                        name: 'place_of_work'
-                                    },
-                                    {
-                                        data: 'clock_in',
-                                        name: 'clock_in'
-                                    },
-                                    {
-                                        data: 'clock_out',
-                                        name: 'clock_out'
-                                    },
-                                    {
-                                        data: 'total_rest',
-                                        name: 'total_rest'
-                                    },
-                                    {
-                                        data: 'total_work',
-                                        name: 'total_work'
-                                    },
-                                    {
-                                        data: 'overtime',
-                                        name: 'overtime'
-                                    },
-                                    {
-                                        data: 'added_by',
-                                        name: 'added_by'
-                                    },
-                                    {
-                                        data: 'action',
-                                        name: 'action',
-                                        orderable: false
-                                    },
-                                ];
-                            } else {
-                                $(`.type2-table`).show()
-                                $(`.type1-table`).hide()
-                                var cols = [{
+                         
+
+                            let table_table = $(`.type1-table`).DataTable({
+                                responsive: true,
+                                fixedHeader: {
+                                    header: true,
+                                    footer: true
+                                },
+                                processing: true,
+                                serverSide: true,
+                                ajax: {
+                                    url: "{{ route('update_attendances.index') }}",
+                                    data: {
+                                        attendance_date1: attendance_date1,
+                                        attendance_date2: attendance_date2,
+                                        company_id: company_id,
+                                        employee_id: employee_id,
+                                        "_token": "{{ csrf_token() }}",
+                                    }
+                                },
+
+
+                                columns: [{
                                         data: 'employee',
                                         name: 'employee'
                                     },
@@ -310,6 +271,18 @@
                                         name: 'amount_paid'
                                     },
                                     {
+                                        data: 'total_rest',
+                                        name: 'total_rest'
+                                    },
+                                    {
+                                        data: 'total_work',
+                                        name: 'total_work'
+                                    },
+                                    {
+                                        data: 'overtime',
+                                        name: 'overtime'
+                                    },
+                                    {
                                         data: 'added_by',
                                         name: 'added_by'
                                     },
@@ -318,30 +291,7 @@
                                         name: 'action',
                                         orderable: false
                                     },
-                                ];
-                            }
-
-                            let table_table = $(`.type${rate_type}-table`).DataTable({
-                                responsive: true,
-                                fixedHeader: {
-                                    header: true,
-                                    footer: true
-                                },
-                                processing: true,
-                                serverSide: true,
-                                ajax: {
-                                    url: "{{ route('update_attendances.index') }}",
-                                    data: {
-                                        attendance_date1: attendance_date1,
-                                        attendance_date2: attendance_date2,
-                                        company_id: company_id,
-                                        employee_id: employee_id,
-                                        "_token": "{{ csrf_token() }}",
-                                    }
-                                },
-
-
-                                columns: cols,
+                                ],
 
 
                                 "order": [],
@@ -366,7 +316,20 @@
                                 ],
 
                             });
-                            new $.fn.dataTable.FixedHeader(table_table);
+                            // new $.fn.dataTable.FixedHeader(table_table);
+
+
+                            if (rate_type == 1) {
+                                table_table.column(5).visible(false);
+                                table_table.column(6).visible(true);
+                                table_table.column(7).visible(true);
+                                table_table.column(8).visible(true);
+                            } else {
+                                table_table.column(5).visible(true);
+                                table_table.column(6).visible(false);
+                                table_table.column(7).visible(false);
+                                table_table.column(8).visible(false);
+                            }
 
                         }
                     })
