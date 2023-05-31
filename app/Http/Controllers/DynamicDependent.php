@@ -176,4 +176,22 @@ class DynamicDependent extends Controller
     {
         return Designation::find($id);
     }
+
+    public function get_shift_based_employee(Request $request)
+    {
+        $first_name = $request->get('first_name');
+        $last_name = $request->get('last_name');
+        $data = Employee::when($request->shift_id != null, function ($q) use ($request) {
+                return $q->where('office_shift_id', $request->shift_id);
+            })
+            ->where('is_active', 1)
+            ->where('exit_date', NULL)
+            ->get();
+        $output = '';
+        foreach ($data as $row) {
+            $output .= '<option value=' . $row->id . '>' . $row->first_name . ' ' . $row->last_name . '</option>';
+        }
+
+        return $output;
+    }
 }

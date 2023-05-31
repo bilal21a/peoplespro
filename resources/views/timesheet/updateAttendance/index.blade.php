@@ -639,6 +639,27 @@
                     });
                 }
             });
+            $('#shift_id').change(function() {
+                $('#designation_id').selectpicker('val', '');
+            //     console.log("shift change");
+            //     if ($(this).val() !== '') {
+            //         let shift_id= $('#shift_id').val();
+            //         let first_name = $(this).data('first_name');
+            //         let last_name = $(this).data('last_name');
+            //         let _token = $('input[name="_token"]').val();
+            //         $.ajax({
+            //             url: "{{ route('get_shift_based_employee') }}",
+            //             method: "POST",
+            //             data: {shift_id: shift_id, _token: _token, first_name: first_name, last_name: last_name},
+            //             success: function (result) {
+            //                 $('select').selectpicker("destroy");
+            //                 $('#employee_id').html(result);
+            //                 $('select').selectpicker();
+
+            //             }
+            //         });
+            //     }
+            });
             $('#designation_id').change(function() {
                 if ($(this).val() !== '') {
                     let shift_id= $('#shift_id').val();
