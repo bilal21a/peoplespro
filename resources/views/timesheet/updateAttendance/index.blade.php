@@ -224,7 +224,7 @@
                         success: function(res) {
                             console.log('res: ', res);
                             var rate_type = res.rate_type != null ? res.rate_type : 1
-                         
+
 
                             let table_table = $(`.type1-table`).DataTable({
                                 responsive: true,
@@ -430,10 +430,10 @@
                         $('#clock_out_edit').val(html.data.clock_out);
                         $('#place_of_work_edit').val(html.data.place_of_work);
                         if (html.data.designation_type!=1) {
-                            $('#amount_paid_edit').val(html.data.amount_paid);   
+                            $('#amount_paid_edit').val(html.data.amount_paid);
                             $('.amount_paid_edit_block').show()
                         }else{
-                            $('#amount_paid_edit').val(null);   
+                            $('#amount_paid_edit').val(null);
                             $('.amount_paid_edit_block').hide()
                         }
 
@@ -616,7 +616,7 @@
 
                         }
                     });
-            
+
                 }
             });
             $('#dept_id').change(function() {
@@ -641,6 +641,7 @@
             });
             $('#designation_id').change(function() {
                 if ($(this).val() !== '') {
+                    let shift_id= $('#shift_id').val();
                     let value = $(this).val();
                     let first_name = 'first_name';
                     let last_name = 'last_name';
@@ -652,7 +653,8 @@
                             value: value,
                             _token: _token,
                             first_name: first_name,
-                            last_name: last_name
+                            last_name: last_name,
+                            shift_id: shift_id
                         },
                         success: function(result) {
                             $('select').selectpicker("destroy");
